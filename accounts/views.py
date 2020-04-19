@@ -8,7 +8,5 @@ from accounts.serializers.accounts import CustomUserSerializer
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
-    print("11111")
-
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer

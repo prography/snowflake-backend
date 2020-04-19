@@ -109,3 +109,16 @@ STATIC_URL = '/static/'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# JWT
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+}
