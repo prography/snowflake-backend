@@ -1,3 +1,4 @@
+.idea/
 venv/
 docker
 ### Django ###
@@ -185,7 +186,7 @@ Temporary Items
 
 # Rope project settings
 
-# Mr Developer
+# Mr Developerdo
 
 # mkdocs documentation
 
@@ -194,3 +195,4 @@ Temporary Items
 # Pyre type checker
 
 # End of https://www.gitignore.io/api/macos,django,python
+
