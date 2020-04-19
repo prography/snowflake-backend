@@ -34,10 +34,13 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-LOCAL_APPS = [
-    'accounts'
+THIRD_PARTY_APPS = [
+    'rest_framework',
 ]
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+LOCAL_APPS = [
+    'accounts',
+]
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,7 +70,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'snowflake.wsgi.application'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
