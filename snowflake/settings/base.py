@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
 ]
 LOCAL_APPS = [
     'accounts',
+    'products',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
@@ -110,7 +111,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Custom user model
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'accounts.User'
 
 # JWT
 REST_FRAMEWORK = {
