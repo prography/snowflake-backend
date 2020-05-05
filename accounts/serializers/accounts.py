@@ -1,10 +1,19 @@
 from django.conf.urls import url, include
-from accounts.models import CustomUser
+from accounts.models import User
 from rest_framework import routers, serializers, viewsets
 
 
 # Serializers define the API representation.
-class CustomUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ['email', 'username', 'nickname', 'date_joined']
+        model = User
+        fields = [
+            "email",
+            "username",
+            "nickname",
+            "image",
+            "social",
+            "gender",
+            "partner_gender",
+            "date_joined",
+        ]
