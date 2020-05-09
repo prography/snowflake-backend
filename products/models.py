@@ -14,6 +14,7 @@ class Product(models.Model):
     num_of_reviews = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    num_of_views = models.BigIntegerField(default=0)
 
     # content_type definition
     limit = models.Q(app_label='products', model='condom') | models.Q(app_label='products', model='gel')
