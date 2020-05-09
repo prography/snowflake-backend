@@ -17,7 +17,7 @@ def create_image_path(instance, filename):
     # 확장자 추출
     extension = os.path.splitext(filename)[-1].lower()
     # 결합 후 return
-    return "/".join(["user", ymd_path + uuid_name + extension])
+    return "/".join(["user", ymd_path + "-" + uuid_name + extension])
 
 
 class User(AbstractUser):
@@ -27,6 +27,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
     nickname = models.CharField(max_length=255)
+    # Image field
     image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
     social = models.IntegerField(choices=SOCIAL_CHOICES, null=True, blank=True)
     gender = models.IntegerField(choices=GENDER_CHOICES)

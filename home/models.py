@@ -7,8 +7,10 @@ class WelcomeCard(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # WelcomeCard의 버튼을 클릭하면 redirect할 주소
     button_src = models.URLField(max_length=2000)
-    img_src = models.URLField(max_length=2000)
+    # WelcomeCard의 이미지
+    image = models.ImageField(upload_to="home/welcome_card/image/", blank=True, null=True)
 
     # 카드의 메인 화면에서의 위치 지정
     row = models.IntegerField(default=-1)
