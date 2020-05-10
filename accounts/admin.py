@@ -10,8 +10,9 @@ class UserAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
         return mark_safe('<img src="%s" width="150" height="150" />' % (obj.image.url))
 
-    image_tag.short_description = 'Image 미리보기'
-    fields = ['image', 'image_tag'] + [field.name for field in User._meta.fields if
-                                       field.name != "id" and field.name != 'image']
-    readonly_fields = ('image_tag',)
-    list_display = ("email", "nickname", 'social')
+    image_tag.short_description = "Image 미리보기"
+    fields = ["image", "image_tag"] + [
+        field.name for field in User._meta.fields if field.name != "id" and field.name != "image"
+    ]
+    readonly_fields = ("image_tag", "date_joined", "password")
+    list_display = ("email", "nickname", "social")
