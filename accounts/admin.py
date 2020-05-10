@@ -14,3 +14,4 @@ class UserAdmin(admin.ModelAdmin):
     fields = ['image', 'image_tag'] + [field.name for field in User._meta.fields if
                                        field.name != "id" and field.name != 'image']
     readonly_fields = ('image_tag',)
+    list_display = ("email", "nickname", 'social')
