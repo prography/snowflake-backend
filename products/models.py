@@ -19,10 +19,8 @@ def create_path(directory, filename):
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    # thumbnail = models.ImageField(upload_to="products/product/thumbnail/", blank=True, null=True)
     thumbnail = models.ImageField(upload_to=lambda instance, filename: create_path('thumbnail', filename), blank=True,
                                   null=True)
-    # image = models.ImageField(upload_to="products/product/image/", blank=True, null=True)
     image = models.ImageField(upload_to=lambda instance, filename: create_path('image', filename), blank=True,
                               null=True)
     description = models.TextField(blank=True, null=True)
