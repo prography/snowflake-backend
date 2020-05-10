@@ -1,12 +1,30 @@
+import os
+from uuid import uuid4
+
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from django.utils import timezone
+
+
+def create_path(directory, filename):
+    ymd_path = timezone.localtime().strftime("%Y-%m-%d-%H%M%S")
+    # 길이 32 인 uuid 값
+    uuid_name = uuid4().hex
+    # 확장자 추출
+    extension = os.path.splitext(filename)[-1].lower()
+    # 결합 후 return
+    return "/".join(["products", "product", directory, ymd_path + "-" + uuid_name + extension])
 
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    thumbnail = models.ImageField(upload_to="products/thumbnail/", blank=True, null=True)
-    image = models.ImageField(upload_to="products/image/", blank=True, null=True)
+    # thumbnail = models.ImageField(upload_to="products/product/thumbnail/", blank=True, null=True)
+    thumbnail = models.ImageField(upload_to=lambda instance, filename: create_path('thumbnail', filename), blank=True,
+                                  null=True)
+    # image = models.ImageField(upload_to="products/product/image/", blank=True, null=True)
+    image = models.ImageField(upload_to=lambda instance, filename: create_path('image', filename), blank=True,
+                              null=True)
     description = models.TextField(blank=True, null=True)
     manufacturer = models.CharField(max_length=100, blank=True, null=True)
     score = models.FloatField(default=0)

@@ -45,6 +45,7 @@ LOCAL_APPS = [
     'accounts',
     'products',
     'reviews',
+    'home',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
@@ -109,7 +110,7 @@ USE_L10N = True
 USE_TZ = True
 
 # AWS S3 static files
-AWS_DEFAULT_ACL = None
+# AWS_DEFAULT_ACL = None
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
@@ -125,7 +126,7 @@ STATICFILES_DIRS = [
 # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_URL = '/static/'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'snowflake.storage_backends.MediaStorage'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
