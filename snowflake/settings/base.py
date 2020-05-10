@@ -39,6 +39,7 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'storages',
 ]
 LOCAL_APPS = [
     'accounts',
@@ -107,10 +108,24 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
+# AWS S3 static files
+AWS_DEFAULT_ACL = None
+AWS_ACCESS_KEY_ID = 'AKIAU3LSGXHXZNPXBP5S'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'snowflake-django-static'
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'snowflake/static'),
+]
+# STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_URL = '/static/'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
