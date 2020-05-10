@@ -30,7 +30,7 @@
 
 ## Built With 🛠
 
-- Django
+- Django REST Framework
 - JWT
 - AWS S3
 
