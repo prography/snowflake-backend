@@ -54,7 +54,7 @@ class Condom(models.Model):
     durability = models.FloatField(default=0, verbose_name="내구성")
 
     # Reverse to content_type parent object
-    product = GenericRelation(Product, related_query_name='product')
+    product = GenericRelation(Product, related_query_name='Condom.product')
 
     def __str__(self):
         p = self.product.first()
@@ -65,4 +65,4 @@ class Gel(models.Model):
     viscosity = models.FloatField(default=0, verbose_name="점성")
 
     # Reverse to content_type parent object
-    product = GenericRelation(Product, related_query_name='product')
+    product = GenericRelation(Product, related_query_name='Gel.product')
