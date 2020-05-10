@@ -17,14 +17,18 @@ def create_path(directory, filename):
     return "/".join(["products", "product", directory, ymd_path + "-" + uuid_name + extension])
 
 
+def create_thumbnail_path(instance, filename):
+    return create_path('thumbnail', filename)
+
+
+def create_image_path(instance, filename):
+    return create_path('image', filename)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    # thumbnail = models.ImageField(upload_to="products/product/thumbnail/", blank=True, null=True)
-    thumbnail = models.ImageField(upload_to=lambda instance, filename: create_path('thumbnail', filename), blank=True,
-                                  null=True)
-    # image = models.ImageField(upload_to="products/product/image/", blank=True, null=True)
-    image = models.ImageField(upload_to=lambda instance, filename: create_path('image', filename), blank=True,
-                              null=True)
+    thumbnail = models.ImageField(upload_to=create_thumbnail_path, blank=True, null=True)
+    image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     manufacturer = models.CharField(max_length=100, blank=True, null=True)
     score = models.FloatField(default=0)
