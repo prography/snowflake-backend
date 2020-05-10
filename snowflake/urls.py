@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('home/', include('home.urls', namespace='home')),
 
     # JWT v2: simple jwt token
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
