@@ -1,8 +1,11 @@
 from django.contrib import admin
 
-from reviews.models import Review
+from reviews.models import Review, ReviewCondom
 
 
-@admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in Review._meta.fields]
+    list_display = ("product", "user", "total")
+
+
+# admin.site.register(Review)
+admin.site.register(ReviewCondom, ReviewAdmin)
