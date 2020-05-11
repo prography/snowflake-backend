@@ -55,6 +55,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ("name", "manufacturer", "score", "num_of_reviews")
 
 
-admin.site.register(Product, ProductAdmin)
+# admin.site.register(Product, ProductAdmin)
 admin.site.register(Condom, ProductAdmin)
 admin.site.register(Gel, ProductAdmin)
