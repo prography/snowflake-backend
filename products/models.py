@@ -2,8 +2,7 @@ import os
 from uuid import uuid4
 
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from model_utils.managers import InheritanceManager
 from django.utils import timezone
 
 
@@ -18,11 +17,11 @@ def create_path(directory, filename):
 
 
 def create_thumbnail_path(instance, filename):
-    return create_path('thumbnail', filename)
+    return create_path("thumbnail", filename)
 
 
 def create_image_path(instance, filename):
-    return create_path('image', filename)
+    return create_path("image", filename)
 
 
 class Product(models.Model):
@@ -38,31 +37,24 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     num_of_views = models.BigIntegerField(default=0)
 
-    # content_type definition
-    limit = models.Q(app_label='products', model='condom') | models.Q(app_label='products', model='gel')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to=limit)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    objects = InheritanceManager()
 
     def __str__(self):
         return self.name
 
 
-class Condom(models.Model):
-    oily = models.FloatField(default=0, verbose_name="윤활제")
+class Condom(Product):
+    CATEGORY_CHOICES = ((1, "일반형"), (2, "슬림형"), (3, "초박형"), (4, "돌출형"), (5, "꼭지형"), (6, "사전지연형"))
+
+    category = models.IntegerField(choices=CATEGORY_CHOICES, default=1)
     thickness = models.FloatField(default=0, verbose_name="두께")
-    durability = models.FloatField(default=0, verbose_name="내구성")
+    length = models.FloatField(default=0, verbose_name="길이")
+    width = models.FloatField(default=0, verbose_name="폭")
 
-    # Reverse to content_type parent object
-    product = GenericRelation(Product, related_query_name='Condom.product')
-
-    def __str__(self):
-        p = self.product.first()
-        return "{}_{}".format(p.manufacturer, p.name) or "!!!"
+    avg_oily = models.FloatField(default=0, verbose_name="윤활제 평균")
+    avg_thickness = models.FloatField(default=0, verbose_name="두께 평균")
+    avg_durability = models.FloatField(default=0, verbose_name="내구성 평균")
 
 
-class Gel(models.Model):
-    viscosity = models.FloatField(default=0, verbose_name="점성")
-
-    # Reverse to content_type parent object
-    product = GenericRelation(Product, related_query_name='Gel.product')
+class Gel(Product):
+    avg_viscosity = models.FloatField(default=0, verbose_name="점성 평균")
