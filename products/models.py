@@ -55,6 +55,9 @@ class Condom(Product):
     avg_thickness = models.FloatField(default=0, verbose_name="두께 평균")
     avg_durability = models.FloatField(default=0, verbose_name="내구성 평균")
 
+    def __str__(self):
+        return self.name + " - " + self.manufacturer
+
 
 class Gel(Product):
     avg_viscosity = models.FloatField(default=0, verbose_name="점성 평균")
