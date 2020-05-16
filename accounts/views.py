@@ -20,6 +20,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         self.perform_create(serializer)
         return Response({"message": "회원가입 완료!"}, status=status.HTTP_201_CREATED)
