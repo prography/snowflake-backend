@@ -6,5 +6,5 @@ from home.views import WelcomeCardListReadView
 app_name = 'home'
 
 urlpatterns = [
-    path('welcome_cards/', WelcomeCardListReadView.as_view())
+    path('welcome-cards/', WelcomeCardListReadView.as_view(), name='welcome-cards')
 ]
