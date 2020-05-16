@@ -23,14 +23,14 @@ class User(AbstractUser):
     SOCIAL_CHOICES = ((1, "kakao"), (2, "naver"))
     GENDER_CHOICES = ((1, "남"), (2, "여"), (3, "선택안함"))
     PARTNER_GENDER_CHOICES = ((1, "남"), (2, "여"), (3, "모두"), (4, "선택안함"))
-    username = None
+    username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(_("email address"), unique=True)
-    nickname = models.CharField(max_length=255)
     # Image field
     image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
     social = models.IntegerField(choices=SOCIAL_CHOICES, null=True, blank=True)
     gender = models.IntegerField(choices=GENDER_CHOICES)
     partner_gender = models.IntegerField(choices=PARTNER_GENDER_CHOICES)
+    # age = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
