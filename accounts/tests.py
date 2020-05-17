@@ -11,7 +11,7 @@ class UserTestCase(APITestCase):
         data = {
             "email": "1@1.com",
             "password": "123",
-            "nickname": "남바완",
+            "username": "남바완",
             "image": ImageFile(open("media/1.png", "rb")),
             "social": "",
             "gender": 1,

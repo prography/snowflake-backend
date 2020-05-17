@@ -20,17 +20,16 @@ def create_image_path(instance, filename):
 
 
 class User(AbstractUser):
-    SOCIAL_CHOICES = ((1, "kakao"), (2, "naver"))
-    GENDER_CHOICES = ((1, "남"), (2, "여"), (3, "선택안함"))
-    PARTNER_GENDER_CHOICES = ((1, "남"), (2, "여"), (3, "모두"), (4, "선택안함"))
-    username = None
+    SOCIAL_CHOICES = (('KAKAO', "kakao"), ('NAVER', "naver"), ('NONE', 'none'))
+    GENDER_CHOICES = (('MAN', "남"), ('WOMAN', "여"), ('BOTH', "모두"), ('NONE', "none"))
+    username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(_("email address"), unique=True)
-    nickname = models.CharField(max_length=255)
     # Image field
     image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
-    social = models.IntegerField(choices=SOCIAL_CHOICES, null=True, blank=True)
-    gender = models.IntegerField(choices=GENDER_CHOICES)
-    partner_gender = models.IntegerField(choices=PARTNER_GENDER_CHOICES)
+    social = models.CharField(max_length=20, choices=SOCIAL_CHOICES, null=True, blank=True, default='NONE')
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='NONE')
+    partner_gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='NONE')
+    birth_year = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
