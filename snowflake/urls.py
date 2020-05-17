@@ -54,4 +54,5 @@ urlpatterns = [
     # app
     path('accounts/', include('accounts.urls')),
     path('home/', include('home.urls')),
+    path('products/', include('products.urls'))
 ]

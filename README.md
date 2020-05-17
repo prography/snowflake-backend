@@ -1,8 +1,17 @@
 # 눈송이❄️
 
-#### 건강한 사랑을 위한 개방된 정보공유
+## 건강한 사랑을 위한 개방된 정보공유
 성인용품 리뷰 서비스로, 거부감 없이 편하게 사용할 수 있도록 만든 어플리케이션입니다.
 
+## Development
+### local 환경에서 test db 대상 실행
+```
+python manage.py runserver --settings=snowflake.settings.local
+```
+### local 환경에서 remote db 대상 실행
+```
+python manage.py runserver --settings=snowflake.settings.production
+```
 
 
 ## Getting Started 📖
@@ -40,3 +49,4 @@
 
 - [임정택](https://github.com/JeongtaekLim)
 - [최지수](https://github.com/jisoo1170)
+
