@@ -20,6 +20,7 @@ itypes==1.2.0
 Jinja2==2.11.2
 jmespath==0.9.5
 MarkupSafe==1.1.1
+mysqlclient==1.4.6
 packaging==20.3
 Pillow==7.1.2
 PyJWT==1.7.1
