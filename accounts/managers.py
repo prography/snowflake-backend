@@ -29,7 +29,6 @@ class UserManager(UserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        extra_fields.setdefault("nickname", "admin")
         extra_fields.setdefault("gender", 1)
         extra_fields.setdefault("partner_gender", 1)
 
