@@ -7,13 +7,13 @@ from products.models import Product, Condom, Gel
 
 
 class Review(models.Model):
-    GENDER_CHOICES = ((1, "남"), (2, "여"), (3, "선택안함"))
+    GENDER_CHOICES = (('MAN', "남"), ('WOMAN', "여"), ('BOTH', "모두"), ('NONE', "none"))
 
     user = models.ForeignKey(
         User, verbose_name="작성자", on_delete=models.CASCADE, related_name="user"
     )
-    gender = models.IntegerField(choices=GENDER_CHOICES, verbose_name="성별")
-    partner_gender = models.IntegerField(choices=GENDER_CHOICES, verbose_name="상대방 성별")
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NONE', verbose_name="성별")
+    partner_gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NONE', verbose_name="상대방 성별")
     content = models.TextField(verbose_name="내용")
     total = models.FloatField(default=0, verbose_name="종합 별점")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 시간")

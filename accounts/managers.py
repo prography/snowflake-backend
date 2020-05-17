@@ -1,8 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import UserManager
 from django.utils.translation import ugettext_lazy as _
 
 
-class UserManager(BaseUserManager):
+class UserManager(UserManager):
     """
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
@@ -28,7 +29,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        extra_fields.setdefault("nickname", "admin")
         extra_fields.setdefault("gender", 1)
         extra_fields.setdefault("partner_gender", 1)
 
