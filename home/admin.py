@@ -19,4 +19,4 @@ class WelcomeCardAdmin(admin.ModelAdmin):
     readonly_fields = ("image_tag", "created_at", "updated_at")
     # fields = [field.name for field in WelcomeCard._meta.fields if field.name != "id"]
 
-    list_display = ("title", "status", 'row', 'col')
+    list_display = ("title", "status", 'category', 'col')
