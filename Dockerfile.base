@@ -3,6 +3,5 @@ ENV PYTHONUNBUFFERED 0
 ENV TZ="/usr/share/zoneinfo/Asia/Seoul"
 WORKDIR /app
 COPY requirements.txt ./
+RUN apt-get update && apt-get install -y nginx net-tools vim
 RUN pip install --upgrade pip && pip install -r requirements.txt
-COPY . /app/
-RUN rm -rf /app/snowflake/static && mkdir /app/snowflake/static
