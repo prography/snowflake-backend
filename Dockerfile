@@ -1,4 +1,4 @@
-FROM snowflake_base:latest
+FROM 333636352495.dkr.ecr.ap-northeast-2.amazonaws.com/snowflake_base_v2:latest
 WORKDIR /app
 COPY . /app/
 RUN rm -rf /app/snowflake/static && mkdir /app/snowflake/static
