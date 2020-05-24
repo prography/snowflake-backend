@@ -1,6 +1,5 @@
 import multiprocessing
 
-name = 'snowflake'
 bind = 'unix:/app/snowflake.sock'
 workers = multiprocessing.cpu_count() * 2 + 1
 keepalive = 32
@@ -15,9 +14,5 @@ max_requests = 1000
 max_requests_jitter = 50
 graceful_timeout = 15
 timeout = 15
-
-BASE_DIR = "/app/snowflake"
-pythonpath = BASE_DIR
-chdir = BASE_DIR
 
 preload_app = False
