@@ -6,13 +6,15 @@ class WelcomeCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = WelcomeCard
         fields = [
-            "title",
             "description",
+            "tag_txt",
             "created_at",
             "updated_at",
             "button_src",
+            "button_txt",
             "image",
-            "row",
+            "design_type",
+            "category",
             "col",
             "status",
         ]
