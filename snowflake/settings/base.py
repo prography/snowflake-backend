@@ -123,11 +123,9 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_LOCATION = 'static'
 
 STATIC_URL = '/static/'
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [
-    STATIC_DIR,
-]
-STATIC_ROOT = '/var/www/static/'
+STATIC_DIR = os.path.join(ROOT_DIR, 'static')
+
+STATIC_ROOT = os.path.join(ROOT_DIR, 'static')
 
 DEFAULT_FILE_STORAGE = 'snowflake.storage_backends.MediaStorage'
 
