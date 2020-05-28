@@ -13,4 +13,4 @@ class WelcomeCardListReadView(generics.ListAPIView):
     """
     permission_classes = [AllowAny]
     serializer_class = WelcomeCardSerializer
-    queryset = WelcomeCard.objects.filter(status='PUB').order_by('row')
+    queryset = WelcomeCard.objects.filter(status='PUB').order_by('col')
