@@ -53,11 +53,15 @@ class WelcomeCard(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name_kor = models.CharField(max_length=255, null=True, blank=True)
+    name_eng = models.CharField(max_length=255, null=True, blank=True)
+
     thumbnail = models.ImageField(upload_to=create_thumbnail_path, blank=True, null=True)
     image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    manufacturer = models.CharField(max_length=100, blank=True, null=True)
+    manufacturer_kor = models.CharField(max_length=100, blank=True, null=True)
+    manufacturer_eng = models.CharField(max_length=100, blank=True, null=True)
+
     score = models.FloatField(default=0)
     ingredients = models.TextField(blank=True, null=True)
     num_of_reviews = models.IntegerField(default=0)
@@ -68,7 +72,7 @@ class Product(models.Model):
     objects = InheritanceManager()
 
     def __str__(self):
-        return self.name
+        return self.name_kor
 
 
 class Condom(Product):
