@@ -1,4 +1,6 @@
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 
@@ -25,6 +27,26 @@ class CondomTopNListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = CondomTopNSerailzier
     queryset = Condom.objects.order_by("-score")[:5]
+
+
+class CondomTrioView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        avg_thickness = Condom.objects.order_by("-avg_thickness")[:1]
+        avg_durability = Condom.objects.order_by("-avg_durability")[:1]
+        avg_oily = Condom.objects.order_by("-avg_oily")[:1]
+
+        thickness_serializer = CondomTopNSerailzier(avg_thickness, many=True)
+        durability_serializer = CondomTopNSerailzier(avg_durability, many=True)
+        oily_serializer = CondomTopNSerailzier(avg_oily, many=True)
+
+        data = {
+            "thickness": thickness_serializer.data,
+            "durability": durability_serializer.data,
+            "oily": oily_serializer.data,
+        }
+        return Response(data)
 
 
 class CondomListView(generics.ListAPIView):
