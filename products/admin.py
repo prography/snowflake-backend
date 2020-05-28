@@ -4,8 +4,8 @@ from django.utils.safestring import mark_safe
 from .models import Product, Condom, Gel
 
 product_admin_primary_fields = [
-    "name",
-    "manufacturer",
+    "name_kor",
+    "manufacturer_kor",
     "image",
     "image_tag",
     "thumbnail",
