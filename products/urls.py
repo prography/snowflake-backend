@@ -7,6 +7,6 @@ from products.views import CondomListView, WelcomeCardListReadView
 app_name = 'products'
 
 urlpatterns = [
-    path('welcome-card/', WelcomeCardListReadView.as_view(), name='welcome-cards'),
+    path('welcome-cards/', WelcomeCardListReadView.as_view(), name='welcome-cards'),
     path('condom-list', CondomListView.as_view(), name="condom-list"),
 ]
