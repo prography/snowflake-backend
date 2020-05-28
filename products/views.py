@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 
-from products.serializers.condom import CondomListSerializer
+from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier
 from products.serializers.welcome_card import WelcomeCardSerializer
 from products.models import WelcomeCard, Condom
 
@@ -11,14 +11,25 @@ class WelcomeCardListReadView(generics.ListAPIView):
     """
     상품 처음 화면에서, 카드 형태의 컨텐츠를 반환하는 API.
     """
+
     permission_classes = [AllowAny]
     serializer_class = WelcomeCardSerializer
-    queryset = WelcomeCard.objects.filter(status='PUB').order_by('col')
+    queryset = WelcomeCard.objects.filter(status="PUB").order_by("col")
+
+
+class CondomTopNListView(generics.ListAPIView):
+    """
+    상품 처음 화면에서, 카드 형태의 컨텐츠를 반환하는 API.
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = CondomTopNSerailzier
+    queryset = Condom.objects.order_by("-score")[:5]
 
 
 class CondomListView(generics.ListAPIView):
     """
-    콘돔의 랭킹을 보여주는 API.
+    콘돔의 전체 랭킹을 보여주는 API.
     """
 
     permission_classes = [AllowAny]

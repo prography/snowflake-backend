@@ -43,3 +43,16 @@ class CondomDetailSerializer(serializers.ModelSerializer):
             "avg_thickness",
             "avg_durability",
         ]
+
+
+class CondomTopNSerailzier(serializers.ModelSerializer):
+    class Meta:
+        model = Condom
+        fields = [
+            "name_kor",
+            "name_eng",
+            "thumbnail",
+            "manufacturer_kor",
+            "manufacturer_eng",
+            "score",
+        ]
