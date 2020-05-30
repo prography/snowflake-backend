@@ -34,4 +34,6 @@ class ReviewCondomSerializer(serializers.ModelSerializer):
             "oily",
             "thickness",
             "durability",
+            "created_at",
+            "updated_at",
         ]
