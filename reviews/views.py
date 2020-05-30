@@ -16,11 +16,18 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
+        # 익명 유저를 위한 조회
+        return (
+            view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
+        )  # 유저에 의한 수정
 
     def has_object_permission(self, request, view, obj):
+        if view.action in ["list", "retrieve"]:
+            return True
         return (
-            view.action in ["create", "update", "partial_update"] and obj.id == request.user.id or request.user.is_staff
+            view.action in ["create", "update", "partial_update"]
+            and obj.id == request.user.id
+            or request.user.is_staff
         )
 
 
@@ -34,7 +41,7 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Review.objects.all()
-        
+
         product = self.request.query_params.get("product", None)
         if product is not None:
             return queryset.filter(product=product)
