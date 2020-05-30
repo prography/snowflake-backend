@@ -2,7 +2,6 @@ from django.shortcuts import render
 
 # ViewSets define the view behavior.
 from rest_framework import viewsets, permissions
-from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -20,6 +19,10 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return view.action == 'create' or request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        return view.action in ['retrieve', 'update',
+                               'partial_update'] and obj.id == request.user.id or request.user.is_staff
 
 
 class UserViewSet(viewsets.ModelViewSet):

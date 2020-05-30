@@ -57,6 +57,7 @@ urlpatterns = [
                   path("home/", include("home.urls")),
                   path("products/", include("products.urls")),
                   path("reviews/", include("reviews.urls")),
+                  path("likes/", include("likes.urls")),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.0.2"

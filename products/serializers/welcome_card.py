@@ -3,7 +3,7 @@ from rest_framework import serializers
 from products.models import WelcomeCard
 
 
-class WelcomeCardSerializer(serializers.ModelSerializer):
+class ProductWelcomeCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = WelcomeCard
         fields = [
