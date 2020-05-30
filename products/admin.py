@@ -4,8 +4,8 @@ from django.utils.safestring import mark_safe
 from .models import Product, Condom, Gel
 
 product_admin_primary_fields = [
-    "name",
-    "manufacturer",
+    "name_kor",
+    "manufacturer_kor",
     "image",
     "image_tag",
     "thumbnail",
@@ -52,7 +52,7 @@ class ProductAdmin(admin.ModelAdmin):
 
         return product_admin_primary_fields + fields
 
-    list_display = ("name", "manufacturer", "score", "num_of_reviews")
+    list_display = ("name_kor", "manufacturer_kor", "score", "num_of_reviews")
 
 
 # admin.site.register(Product, ProductAdmin)
