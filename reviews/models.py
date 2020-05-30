@@ -18,7 +18,7 @@ class Review(models.Model):
         Product, verbose_name="제품", on_delete=models.CASCADE, related_name="review",
     )
     objects = InheritanceManager()
-    
+
     # def __str__(self):
     #     return self.user
 

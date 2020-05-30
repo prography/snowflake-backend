@@ -3,7 +3,6 @@ from rest_framework import serializers
 from accounts.serializers import accounts
 
 from reviews.models import ReviewCondom
-from accounts.models import User
 
 
 condom_filelds = [
