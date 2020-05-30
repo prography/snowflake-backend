@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Product, Condom, Gel
+from .models import Condom, Gel
 
 product_admin_primary_fields = [
     "name_kor",
@@ -13,7 +13,7 @@ product_admin_primary_fields = [
 ]
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductDetailAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
         # print(self, obj)
         return mark_safe('<img src="%s" width="150" height="150" />' % (obj.image.url))
@@ -52,9 +52,8 @@ class ProductAdmin(admin.ModelAdmin):
 
         return product_admin_primary_fields + fields
 
-    list_display = ("name_kor", "manufacturer_kor", "score", "num_of_reviews")
+    list_display = ("id", "name_kor", "manufacturer_kor", "score", "num_of_reviews")
 
 
-# admin.site.register(Product, ProductAdmin)
-admin.site.register(Condom, ProductAdmin)
-admin.site.register(Gel, ProductAdmin)
+admin.site.register(Condom, ProductDetailAdmin)
+admin.site.register(Gel, ProductDetailAdmin)
