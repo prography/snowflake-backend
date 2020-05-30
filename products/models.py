@@ -72,7 +72,7 @@ class Product(models.Model):
     objects = InheritanceManager()
 
     def __str__(self):
-        return self.name_kor
+        return "{}({})".format(self.name_kor, self.name_eng)
 
 
 class Condom(Product):
@@ -95,7 +95,7 @@ class Condom(Product):
     avg_durability = models.FloatField(default=0, verbose_name="내구성 평균")
 
     def __str__(self):
-        return self.name_kor + " - " + self.manufacturer_kor
+        return "{} - {}".format(self.name_kor, self.manufacturer_kor)
 
 
 class Gel(Product):
