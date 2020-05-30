@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 
 from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier
-from products.serializers.welcome_card import WelcomeCardSerializer
+from products.serializers.welcome_card import ProductWelcomeCardSerializer
 from products.models import WelcomeCard, Condom
 
 
@@ -15,7 +15,7 @@ class WelcomeCardListReadView(generics.ListAPIView):
     """
 
     permission_classes = [AllowAny]
-    serializer_class = WelcomeCardSerializer
+    serializer_class = ProductWelcomeCardSerializer
     queryset = WelcomeCard.objects.filter(status='PUB').order_by('col', 'category')
 
 
