@@ -36,3 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password1)
         user.save()
         return user
+
+
+class ReviewUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "username",
+            "image",
+            "gender",
+            "partner_gender",
+        ]

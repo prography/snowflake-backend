@@ -10,7 +10,7 @@ class Review(models.Model):
     GENDER_CHOICES = (('MAN', "남"), ('WOMAN', "여"), ('BOTH', "모두"), ('NONE', "none"))
 
     user = models.ForeignKey(
-        User, verbose_name="작성자", on_delete=models.CASCADE, related_name="user"
+        User, verbose_name="작성자", on_delete=models.CASCADE, related_name="review"
     )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NONE', verbose_name="성별")
     partner_gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='NONE', verbose_name="상대방 성별")
@@ -27,7 +27,7 @@ class Review(models.Model):
 
 class ReviewCondom(Review):
     product = models.ForeignKey(
-        Condom, verbose_name="콘돔", on_delete=models.CASCADE, related_name="condom",
+        Condom, verbose_name="콘돔", on_delete=models.CASCADE, related_name="review_condom",
     )
     oily = models.FloatField(default=0, verbose_name="윤활제 별점")
     thickness = models.FloatField(default=0, verbose_name="두께 별점")
@@ -39,7 +39,7 @@ class ReviewCondom(Review):
 
 class ReviewGel(Review):
     product = models.ForeignKey(
-        Gel, verbose_name="젤", on_delete=models.CASCADE, related_name="gel",
+        Gel, verbose_name="젤", on_delete=models.CASCADE, related_name="review_gel",
     )
     viscosity = models.FloatField(default=0, verbose_name="점성")
 
