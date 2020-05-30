@@ -3,11 +3,11 @@ from reviews.views import ReviewViewSet
 
 from rest_framework.routers import DefaultRouter
 
-app_name = 'reviews'
+app_name = "reviews"
 
 router = DefaultRouter()
-router.register(r'', ReviewViewSet, basename='review')
+router.register(r"", ReviewViewSet, basename="review")
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
 ]
