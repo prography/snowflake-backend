@@ -13,6 +13,20 @@ python manage.py runserver --settings=snowflake.settings.local
 python manage.py runserver --settings=snowflake.settings.production
 ```
 
+## Production
+도커 베이스 이미지 빌드
+```
+docker build -f Dockerfile.base -t snowflake_base .
+```
+도커 베이스 이미지 테스트
+```
+docker run -it -p 8000:8000 snowflake_base /bin/bash 
+```
+도커 프로덕션 이미지 빌드
+```
+docker build -f 
+```
+
 
 ## Getting Started 📖
 

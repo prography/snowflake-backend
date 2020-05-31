@@ -1,9 +1,12 @@
 import os
 from uuid import uuid4
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from model_utils.managers import InheritanceManager
 from django.utils import timezone
+
+from likes.models import Like
 
 
 def create_path(directory, filename):
@@ -37,7 +40,7 @@ class WelcomeCard(models.Model):
     # WelcomeCard의 이미지
     image = models.ImageField(upload_to=create_path, blank=True, null=True)
 
-    design_type = models.CharField(max_length=50, default='DEFAULT')
+    design_type = models.CharField(max_length=50, default="DEFAULT")
 
     CATEGORY_CHOICES = (("NONE", "지정안됨"), ("PROD", "제품"), ("LAB", "실험실"), ("COMMU", "상담소"))
     # 카드의 메인 화면에서의 위치 지정
@@ -53,11 +56,15 @@ class WelcomeCard(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name_kor = models.CharField(max_length=255, null=True, blank=True)
+    name_eng = models.CharField(max_length=255, null=True, blank=True)
+
     thumbnail = models.ImageField(upload_to=create_thumbnail_path, blank=True, null=True)
     image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    manufacturer = models.CharField(max_length=100, blank=True, null=True)
+    manufacturer_kor = models.CharField(max_length=100, blank=True, null=True)
+    manufacturer_eng = models.CharField(max_length=100, blank=True, null=True)
+
     score = models.FloatField(default=0)
     ingredients = models.TextField(blank=True, null=True)
     num_of_reviews = models.IntegerField(default=0)
@@ -65,10 +72,12 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="업데이트 시간")
     num_of_views = models.BigIntegerField(default=0)
 
+    likes = GenericRelation(Like)
+
     objects = InheritanceManager()
 
     def __str__(self):
-        return self.name
+        return "{}({})".format(self.name_kor, self.name_eng)
 
 
 class Condom(Product):
@@ -91,7 +100,7 @@ class Condom(Product):
     avg_durability = models.FloatField(default=0, verbose_name="내구성 평균")
 
     def __str__(self):
-        return self.name + " - " + self.manufacturer
+        return "{} - {}".format(self.name_kor, self.manufacturer_kor)
 
 
 class Gel(Product):

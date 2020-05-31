@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             "password1",
             "password2",
             "username",
+            "birth_year",
             "image",
             "social",
             "gender",
@@ -35,3 +36,17 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password1)
         user.save()
         return user
+
+
+class ReviewUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "username",
+            "birth_year",
+            "image",
+            "gender",
+            "partner_gender",
+        ]
