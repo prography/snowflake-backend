@@ -58,6 +58,20 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
             else:
                 raise NotFound()
 
-        
+        if gender is not None:
+            if gender == "man":
+                queryset = queryset.filter(user__gender="MAN")
+            elif gender == "woman":
+                queryset = queryset.filter(user__gender="WOMAN")
+            else:
+                raise NotFound()
+
+        if partner is not None:
+            if partner == "man":
+                queryset = queryset.filter(user__partner_gender="MAN")
+            elif partner == "woman":
+                queryset = queryset.filter(user__partner_gender="WOMAN")
+            else:
+                raise NotFound()
 
         return queryset.order_by("-id")
