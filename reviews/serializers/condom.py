@@ -10,11 +10,11 @@ condom_filelds = [
     "user",
     "total",
     "product",
+    "created_at",
+    "updated_at",
     "oily",
     "thickness",
     "durability",
-    "created_at",
-    "updated_at",
 ]
 
 

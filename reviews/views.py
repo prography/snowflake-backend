@@ -1,10 +1,11 @@
 from rest_framework import viewsets, permissions
 from rest_framework import generics
+from rest_framework.exceptions import NotFound
 
 from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
 
 from accounts.models import User
-from reviews.models import ReviewCondom, Review
+from reviews.models import ReviewCondom, Review, ReviewGel
 
 
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
@@ -18,16 +19,16 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         # 익명 유저를 위한 조회
         return (
-            view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
+                view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
         )  # 유저에 의한 수정
 
     def has_object_permission(self, request, view, obj):
         if view.action in ["list", "retrieve"]:
             return True
         return (
-            view.action in ["create", "update", "partial_update"]
-            and obj.id == request.user.id
-            or request.user.is_staff
+                view.action in ["create", "update", "partial_update"]
+                and obj.id == request.user.id
+                or request.user.is_staff
         )
 
 
@@ -40,7 +41,10 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         return ReviewCondomSerializer
 
     def get_queryset(self):
-        queryset = Review.objects.all()
+        product_type = self.request.query_params.get("product_type", 'condom')
+        queryset = ReviewCondom.objects.all()
+        if product_type == "gel":
+            queryset = ReviewGel.objects.all()
 
         product = self.request.query_params.get("product", None)
         if product is not None:
