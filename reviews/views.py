@@ -44,5 +44,34 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
 
         product = self.request.query_params.get("product", None)
         if product is not None:
-            return queryset.filter(product=product)
-        return queryset
+            queryset = queryset.filter(product=product)
+
+        order = self.request.query_params.get("order", None)
+        gender = self.request.query_params.get("gender", None)
+        partner = self.request.query_params.get("partner", None)
+
+        if order is not None:
+            if order == "high_score":
+                queryset = queryset.order_by("-total")
+            elif order == "low_score":
+                queryset = queryset.order_by("total")
+            else:
+                raise NotFound()
+
+        if gender is not None:
+            if gender == "man":
+                queryset = queryset.filter(user__gender="MAN")
+            elif gender == "woman":
+                queryset = queryset.filter(user__gender="WOMAN")
+            else:
+                raise NotFound()
+
+        if partner is not None:
+            if partner == "man":
+                queryset = queryset.filter(user__partner_gender="MAN")
+            elif partner == "woman":
+                queryset = queryset.filter(user__partner_gender="WOMAN")
+            else:
+                raise NotFound()
+
+        return queryset.order_by("-id")
