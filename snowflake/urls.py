@@ -42,22 +42,21 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-                  # swagger
-                  url(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0),
-                      name="schema-json"),
-                  url(r"^swagger/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-                  url(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-                  # admin
-                  path("admin/", admin.site.urls),
-                  # JWT v2: simple jwt token
-                  path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-                  path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-                  # app
-                  path("accounts/", include("accounts.urls")),
-                  path("home/", include("home.urls")),
-                  path("products/", include("products.urls")),
-                  path("reviews/", include("reviews.urls")),
-                  path("likes/", include("likes.urls")),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # swagger
+    url(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
+    url(r"^swagger/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    url(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    # admin
+    path("admin/", admin.site.urls),
+    # JWT v2: simple jwt token
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # app
+    path("accounts/", include("accounts.urls")),
+    path("home/", include("home.urls")),
+    path("products/", include("products.urls")),
+    path("reviews/", include("reviews.urls")),
+    path("likes/", include("likes.urls")),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.0.3"
