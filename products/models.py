@@ -1,9 +1,12 @@
 import os
 from uuid import uuid4
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from model_utils.managers import InheritanceManager
 from django.utils import timezone
+
+from likes.models import Like
 
 
 def create_path(directory, filename):
@@ -68,6 +71,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 시간")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="업데이트 시간")
     num_of_views = models.BigIntegerField(default=0)
+
+    likes = GenericRelation(Like)
 
     objects = InheritanceManager()
 

@@ -1,8 +1,10 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 from model_utils.managers import InheritanceManager
 
 from accounts.models import User
+from likes.models import Like
 from products.models import Product, Condom, Gel
 
 
@@ -18,6 +20,8 @@ class Review(models.Model):
         Product, verbose_name="제품", on_delete=models.CASCADE, related_name="review",
     )
     objects = InheritanceManager()
+
+    likes = GenericRelation(Like)
 
     # def __str__(self):
     #     return self.user
