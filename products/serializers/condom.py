@@ -7,9 +7,11 @@ class CondomListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = [
-            "name",
+            "name_kor",
+            "name_eng",
             "thumbnail",
-            "manufacturer",
+            "manufacturer_kor",
+            "manufacturer_eng",
             "num_of_reviews",
             "category",
             "score",
@@ -23,11 +25,13 @@ class CondomDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = [
-            "name",
+            "name_kor",
+            "name_eng",
             "thumbnail",
             "image",
             "description",
-            "manufacturer",
+            "manufacturer_kor",
+            "manufacturer_eng",
             "ingredients",
             "num_of_reviews",
             "category",
@@ -38,4 +42,17 @@ class CondomDetailSerializer(serializers.ModelSerializer):
             "avg_oily",
             "avg_thickness",
             "avg_durability",
+        ]
+
+
+class CondomTopNSerailzier(serializers.ModelSerializer):
+    class Meta:
+        model = Condom
+        fields = [
+            "name_kor",
+            "name_eng",
+            "thumbnail",
+            "manufacturer_kor",
+            "manufacturer_eng",
+            "score",
         ]
