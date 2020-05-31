@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 
-from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier
+from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier, CondomDetailSerializer
 from products.serializers.welcome_card import ProductWelcomeCardSerializer
 from products.models import WelcomeCard, Condom
 
@@ -93,3 +93,9 @@ class CondomListView(generics.ListAPIView):
             else:
                 raise NotFound()
         return queryset
+
+
+class CondomDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CondomDetailSerializer
+    queryset = Condom.objects.all()

@@ -25,6 +25,7 @@ class CondomDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = [
+            "id",
             "name_kor",
             "name_eng",
             "thumbnail",
