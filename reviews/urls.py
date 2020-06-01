@@ -1,5 +1,5 @@
 from django.urls import path, include
-from reviews.views import ReviewCondomViewSet, update_condom_score
+from reviews.views import ReviewCondomViewSet, UpdateCondomScore
 
 from rest_framework.routers import DefaultRouter
 
@@ -10,5 +10,5 @@ router.register(r"", ReviewCondomViewSet, basename="review")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("update-condom-score", update_condom_score.as_view(), name="update_condom_score")
+    path("update-condom-score", UpdateCondomScore.as_view(), name="update_condom_score"),
 ]

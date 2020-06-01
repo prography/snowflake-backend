@@ -13,7 +13,6 @@ from products.models import Condom
 from django.db.models import F
 
 
-
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
     Custom permission:
@@ -25,16 +24,16 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         # 익명 유저를 위한 조회
         return (
-                view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
+            view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
         )  # 유저에 의한 수정
 
     def has_object_permission(self, request, view, obj):
         if view.action in ["list", "retrieve"]:
             return True
         return (
-                view.action in ["create", "update", "partial_update"]
-                and obj.id == request.user.id
-                or request.user.is_staff
+            view.action in ["create", "update", "partial_update"]
+            and obj.id == request.user.id
+            or request.user.is_staff
         )
 
 
@@ -47,7 +46,7 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         return ReviewCondomSerializer
 
     def get_queryset(self):
-        product_type = self.request.query_params.get("product_type", 'condom')
+        product_type = self.request.query_params.get("product_type", "condom")
         queryset = ReviewCondom.objects.all()
         if product_type == "gel":
             queryset = ReviewGel.objects.all()
@@ -87,13 +86,12 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         return queryset.order_by("-id")
 
 
-class update_condom_score(APIView):
+class UpdateCondomScore(APIView):
     permission_classes = [AllowAny]
-    
+
     def get(self, request, format=None):
         # condom 점수, 리뷰 개수 초기화
         for condom in Condom.objects.all():
-            print(condom)
             condom.score = 0
             condom.avg_oily = 0
             condom.avg_durability = 0
