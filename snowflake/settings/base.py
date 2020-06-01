@@ -42,7 +42,6 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "storages",
     "drf_yasg",
-    "django_crontab",
 ]
 LOCAL_APPS = [
     "accounts",
