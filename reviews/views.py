@@ -31,9 +31,8 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
         if view.action in ["list", "retrieve"]:
             return True
         return (
-            view.action in ["create", "update", "partial_update"]
-            and obj.id == request.user.id
-            or request.user.is_staff
+            view.action in ["create", "update",
+                            "partial_update"] and obj.id == request.user.id or request.user.is_staff
         )
 
 
