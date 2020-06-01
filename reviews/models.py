@@ -9,7 +9,7 @@ from products.models import Product, Condom, Gel
 
 
 class Review(models.Model):
-    GENDER_CHOICES = (("MAN", "남"), ("WOMAN", "여"), ("BOTH", "모두"), ("NONE", "none"))
+    GENDER_CHOICES = (("MAN", "남"), ("WOMAN", "여"), ("NONE", "none"))
 
     user = models.ForeignKey(
         User, verbose_name="작성자", on_delete=models.CASCADE, related_name="review"
