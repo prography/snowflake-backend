@@ -42,6 +42,4 @@ class ReviewUserSerializer(serializers.ModelSerializer):
             "username",
             "birth_year",
             "image",
-            "gender",
-            "partner_gender",
         ]

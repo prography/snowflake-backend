@@ -8,6 +8,8 @@ from reviews.models import ReviewCondom
 condom_filelds = [
     "id",
     "user",
+    "gender",
+    "partner_gender",
     "total",
     "product",
     "created_at",
