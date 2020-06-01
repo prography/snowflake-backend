@@ -27,6 +27,8 @@ from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
 
+from reviews.views import UpdateCondomScore
+
 # Swagger part
 schema_view = get_schema_view(
     openapi.Info(
@@ -57,6 +59,9 @@ urlpatterns = [
     path("products/", include("products.urls")),
     path("reviews/", include("reviews.urls")),
     path("likes/", include("likes.urls")),
+
+    # 콘돔 점수 업데이트
+    path("update-condom-score", UpdateCondomScore.as_view(), name="update_condom_score"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.0.5"

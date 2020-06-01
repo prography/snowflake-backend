@@ -10,5 +10,4 @@ router.register(r"", ReviewCondomViewSet, basename="review")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("update-condom-score", UpdateCondomScore.as_view(), name="update_condom_score"),
 ]
