@@ -17,6 +17,7 @@ condom_filelds = [
     "oily",
     "thickness",
     "durability",
+    "content",
 ]
 
 
