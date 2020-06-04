@@ -31,8 +31,9 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
         if view.action in ["list", "retrieve"]:
             return True
         return (
-            view.action in ["create", "update",
-                            "partial_update"] and obj.id == request.user.id or request.user.is_staff
+            view.action in ["create", "update", "partial_update"]
+            and obj.id == request.user.id
+            or request.user.is_staff
         )
 
 
@@ -89,27 +90,33 @@ class UpdateCondomScore(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
-        # condom 점수, 리뷰 개수 초기화
-        for condom in Condom.objects.all():
-            condom.score = 0
-            condom.avg_oily = 0
-            condom.avg_durability = 0
-            condom.avg_thickness = 0
-            condom.num_of_reviews = 0
-            condom.save()
-
-        # condom 점수, 래뷰 개수 업데이트
+        # 점수를 hash에 담아두기
+        condom = {}
         for review in ReviewCondom.objects.all():
-            total = review.total
-            oily = review.oily
-            thickness = review.thickness
-            durability = review.durability
-            product = review.product
-            condom = Condom.objects.filter(pk=product).update(
-                score=F("score") + total,
-                avg_oily=F("avg_oily") + oily,
-                avg_thickness=F("avg_thickness") + thickness,
-                avg_durability=F("avg_durability") + durability,
-                num_of_reviews=F("num_of_reviews") + 1,
-            )
+            review_score = [review.total, review.oily, review.thickness, review.durability, 1]
+            product = review.product.id
+            if product in condom:
+                old_score = condom[product]
+                new_score = []
+                for c, t in zip(old_score[:-1], review_score[:-1]):
+                    new = c + t
+                    new_score.append(new)
+                new_score.append(old_score[-1] + 1)
+                condom[product] = new_score
+            else:
+                condom[product] = review_score
+
+        # 점수 업데이트
+        for c in Condom.objects.all():
+            key = c.id
+            num_of_reviews = condom[key][4]
+
+            c.score = condom[key][0] / num_of_reviews
+            c.avg_oily = condom[key][1] / num_of_reviews
+            c.avg_thcikness = condom[key][2] / num_of_reviews
+            c.avg_durability = condom[key][3] / num_of_reviews
+            c.num_of_reviews = num_of_reviews
+
+            c.save()
+
         return Response(status=status.HTTP_200_OK)
