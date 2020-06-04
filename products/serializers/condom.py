@@ -7,6 +7,7 @@ class CondomListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = [
+            "id",
             "name_kor",
             "name_eng",
             "thumbnail",
@@ -50,6 +51,7 @@ class CondomTopNSerailzier(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = [
+            "id",
             "name_kor",
             "name_eng",
             "thumbnail",
