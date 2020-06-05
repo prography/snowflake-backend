@@ -41,8 +41,10 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
     permission_classes = [AnonCreateAndUpdateOwnerOnly]
 
     def get_serializer_class(self):
+        # 리스트, 조회
         if self.action == "list" or self.action == "retrieve":
             return ReviewCondomListSerializer
+        # 생성, 수정, 삭제
         return ReviewCondomSerializer
 
     def get_queryset(self):
