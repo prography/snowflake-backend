@@ -7,11 +7,11 @@ from reviews.models import ReviewCondom
 
 condom_filelds = [
     "id",
+    "product",
     "user",
     "gender",
     "partner_gender",
     "total",
-    "product",
     "created_at",
     "updated_at",
     "oily",
