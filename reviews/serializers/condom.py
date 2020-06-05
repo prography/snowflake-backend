@@ -30,6 +30,8 @@ class ReviewCondomListSerializer(serializers.ModelSerializer):
 
 
 class ReviewCondomSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = ReviewCondom
         fields = condom_filelds
