@@ -113,10 +113,10 @@ class UpdateCondomScore(APIView):
 
             c.score = condom[key][0] / num_of_reviews
             c.avg_oily = condom[key][1] / num_of_reviews
-            c.avg_thcikness = condom[key][2] / num_of_reviews
+            c.avg_thickness = condom[key][2] / num_of_reviews
             c.avg_durability = condom[key][3] / num_of_reviews
             c.num_of_reviews = num_of_reviews
 
             c.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK, data=condom)
