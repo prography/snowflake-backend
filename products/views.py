@@ -16,7 +16,7 @@ class WelcomeCardListReadView(generics.ListAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = ProductWelcomeCardSerializer
-    queryset = WelcomeCard.objects.filter(status='PUB').order_by('col', 'category')
+    queryset = WelcomeCard.objects.filter(status="PUB").order_by("col", "category")
 
 
 class CondomTopNListView(generics.ListAPIView):
@@ -56,40 +56,25 @@ class CondomListView(generics.ListAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = CondomListSerializer
+    condom_category = [c[0] for c in Condom.CATEGORY_CHOICES]
 
     def get_queryset(self):
         order = self.request.query_params.get("order", None)
         category = self.request.query_params.get("category", None)
 
         queryset = Condom.objects.all()
-
         if category is not None:
-            if category == "NORMAL":
-                queryset = queryset.filter(category="NORMAL")
-            elif category == "SLIM":
-                queryset = queryset.filter(category="SLIM")
-            elif category == "CHOBAK":
-                queryset = queryset.filter(category="CHOBAK")
-            elif category == "DOLCHUL":
-                queryset = queryset.filter(category="DOLCHUL")
-            elif category == "GGOKJI":
-                queryset = queryset.filter(category="GGOKJI")
-            elif category == "DELAY":
-                queryset = queryset.filter(category="DELAY")
+            if category in self.condom_category:
+                queryset = queryset.filter(category=category)
             else:
                 raise NotFound()
 
         if order is None:
             queryset = queryset.order_by("-score")
         else:
-            if order == "review":
-                queryset = queryset.order_by("-num_of_reviews")
-            elif order == "oily":
-                queryset = queryset.order_by("-avg_oily")
-            elif order == "thickness":
-                queryset = queryset.order_by("-avg_thickness")
-            elif order == "durability":
-                queryset = queryset.order_by("-avg_durability")
+            if order in ["num_of_reviews", "avg_oily", "avg_thickness", "avg_durability"]:
+                queryset = queryset.order_by(order)
+                queryset = queryset.reverse()
             else:
                 raise NotFound()
         return queryset
@@ -99,3 +84,6 @@ class CondomDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     serializer_class = CondomDetailSerializer
     queryset = Condom.objects.all()
+
+
+
