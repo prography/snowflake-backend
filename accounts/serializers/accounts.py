@@ -1,6 +1,8 @@
-from django.conf.urls import url, include
-from accounts.models import User
+from django.conf.urls import include, url
 from rest_framework import routers, serializers, viewsets
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from accounts.models import User
 
 
 # Serializers define the API representation.
@@ -43,3 +45,13 @@ class ReviewUserSerializer(serializers.ModelSerializer):
             "birth_year",
             "image",
         ]
+
+class CustomUserObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        token['social'] = user.social
+        token['birth_year'] = user.birth_year
+        token['gender'] = user.gender
+        return token
