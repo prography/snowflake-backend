@@ -12,6 +12,8 @@ from products.models import Condom
 
 from django.db.models import F
 
+from snowflake.exception import MissingProductIdException
+
 
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
@@ -53,39 +55,33 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         if product_type == "gel":
             queryset = ReviewGel.objects.all()
 
-        product = self.request.query_params.get("product", None)
-        if product is not None:
-            queryset = queryset.filter(product=product)
+        product = self.request.query_params.get("product")
+        if product is None:
+            raise MissingProductIdException()
+        queryset = queryset.filter(product=product).order_by("-id")
 
-        order = self.request.query_params.get("order", None)
+        score = self.request.query_params.get("score", None)
         gender = self.request.query_params.get("gender", None)
         partner = self.request.query_params.get("partner", None)
 
-        if order is not None:
-            if order == "high_score":
-                queryset = queryset.order_by("-total")
-            elif order == "low_score":
-                queryset = queryset.order_by("total")
+        if score is not None:
+            if score in ["-total", "total"]:
+                queryset = queryset.order_by(score)
             else:
                 raise NotFound()
 
         if gender is not None:
-            if gender == "man":
-                queryset = queryset.filter(user__gender="MAN")
-            elif gender == "woman":
-                queryset = queryset.filter(user__gender="WOMAN")
+            if gender in ["MAN", "WOMAN"]:
+                queryset = queryset.filter(gender=gender)
             else:
                 raise NotFound()
 
         if partner is not None:
-            if partner == "man":
-                queryset = queryset.filter(user__partner_gender="MAN")
-            elif partner == "woman":
-                queryset = queryset.filter(user__partner_gender="WOMAN")
+            if partner in ["MAN", "WOMAN"]:
+                queryset = queryset.filter(partner_gender=partner)
             else:
                 raise NotFound()
-
-        return queryset.order_by("-id")
+        return queryset
 
 
 class UpdateCondomScore(APIView):
