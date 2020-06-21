@@ -5,8 +5,8 @@ import requests
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
+from rest_framework import permissions, status, viewsets, permissions
+from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -15,6 +15,7 @@ from accounts.serializers.accounts import (CustomUserObtainPairSerializer,
                                            UserSerializer)
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
+
 
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
@@ -93,18 +94,18 @@ class UserViewSet(viewsets.ModelViewSet):
             user = user[0]
             return user.social != user_data_per_field['social']
         return False
-    
+
     @action(detail=False, methods=['get'], url_path='naver-login')
     def get_naver_auth_token(self, request, pk=None):
         url = self.naver_social_login.get_auth_url()
         return redirect(url)
-        
+
     @action(detail=False, methods=['get'], url_path='naver-login-callback')
     def naver_login_callback(self, request, pk=None):
         callback_status_token_code = request.query_params.get('state')
         if callback_status_token_code != self.naver_social_login.state_token_code:
             return Response({'message': 'state token code is not valid'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
         try:
             user_data_per_field = self.naver_social_login.get_user_data(request)
         except Exception as e:
@@ -115,7 +116,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({
                 'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
             user = self.naver_social_login.login(user_data_per_field)
         else:
@@ -126,12 +127,12 @@ class UserViewSet(viewsets.ModelViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
-    
+
     def _naver_login_or_sign_up(self, snowflake_user_data):
         email = snowflake_user_data['email']
         social = snowflake_user_data['social']
         user = User.objects.filter(email=email)
-        
+
         if user.exists():
             user = User.objects.get(email=email)
             if user.social == social:
@@ -145,3 +146,35 @@ class UserViewSet(viewsets.ModelViewSet):
 
         user = naver.sign_up(snowflake_user_data)
         return user
+
+
+@api_view(['GET', ])
+@permission_classes([permissions.AllowAny])
+def check_duplicates_email(request):
+    if request.method == 'GET':
+        email = request.query_params.get('value')
+        if email is None:
+            return Response({"message": "email is required :("})
+
+        is_exist = User.objects.filter(email=email).count() > 0
+        if is_exist:
+            return Response({"message": "email {} already exist".format(email)},
+                            status=status.HTTP_409_CONFLICT)
+
+        return Response({"message": "no email duplicates :)"})
+
+
+@api_view(['GET', ])
+@permission_classes([permissions.AllowAny])
+def check_duplicates_username(request):
+    if request.method == 'GET':
+        username = request.query_params.get('value')
+        if username is None:
+            return Response({"message": "username is required :("})
+
+        is_exist = User.objects.filter(username=username).count() > 0
+        if is_exist:
+            return Response({"message": "username {} already exist".format(username)},
+                            status=status.HTTP_409_CONFLICT)
+
+        return Response({"message": "no username duplicates :)"})
