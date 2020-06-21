@@ -8,8 +8,7 @@ from rest_framework.decorators import action, api_view, authentication_classes, 
 from rest_framework.response import Response
 
 from accounts.models import User
-from accounts.serializers.accounts import (CustomUserObtainPairSerializer,
-                                           UserSerializer)
+from accounts.serializers.accounts import CustomUserObtainPairSerializer, UserSerializer
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
 
@@ -23,23 +22,33 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return view.action == 'create' or request.user and request.user.is_authenticated
+        return request.method == "POST" or request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        return view.action in ['retrieve', 'update',
-                               'partial_update'] and obj.id == request.user.id or request.user.is_staff
+        return (
+            request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
+        )
 
 
 class UserGetUpdateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AnonCreateAndUpdateOwnerOnly]
+    serializer_class = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        permission_classes = [permissions.AllowAny]
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+        return Response({"message": "회원가입 완료!"}, status=status.HTTP_201_CREATED)
 
     def get(self, request, format=None):
-        serializer = UserSerializer(request.user)
+        serializer = self.serializer_class(request.user)
         return Response(serializer.data)
 
     def patch(self, request, format=None):
         user = User.objects.filter(id=request.user.id).first()
-        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer = self.serializer_class(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -53,9 +62,6 @@ class UserGetUpdateView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    state_token_code = uuid4().hex
 
     def __init__(self, **kwargs):
         self.kakao_social_login = KakaoSocialLogin()
