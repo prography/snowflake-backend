@@ -36,6 +36,7 @@ class CondomDetailSerializer(serializers.ModelSerializer):
             "manufacturer_eng",
             "ingredients",
             "num_of_reviews",
+            "num_of_views",
             "category",
             "thickness",
             "length",
