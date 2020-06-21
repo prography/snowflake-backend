@@ -7,14 +7,17 @@ from reviews.models import ReviewCondom
 
 condom_filelds = [
     "id",
-    "user",
-    "total",
     "product",
+    "user",
+    "gender",
+    "partner_gender",
+    "total",
     "created_at",
     "updated_at",
     "oily",
     "thickness",
     "durability",
+    "content",
 ]
 
 
@@ -27,6 +30,8 @@ class ReviewCondomListSerializer(serializers.ModelSerializer):
 
 
 class ReviewCondomSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = ReviewCondom
         fields = condom_filelds

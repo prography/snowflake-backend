@@ -8,6 +8,7 @@
 
 .idea/
 venv/
+env/
 docker
 ### Django ###
 *.log

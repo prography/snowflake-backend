@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.utils.html import mark_safe
-from .models import User
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
+from django.utils.html import mark_safe
+
+from .models import User
 
 
 @admin.register(User)

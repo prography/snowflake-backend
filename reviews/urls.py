@@ -1,5 +1,5 @@
 from django.urls import path, include
-from reviews.views import ReviewCondomViewSet
+from reviews.views import ReviewCondomViewSet, UpdateCondomScore
 
 from rest_framework.routers import DefaultRouter
 

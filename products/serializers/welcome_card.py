@@ -7,6 +7,7 @@ class ProductWelcomeCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = WelcomeCard
         fields = [
+            "title",
             "description",
             "tag_txt",
             "created_at",

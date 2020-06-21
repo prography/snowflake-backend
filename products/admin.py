@@ -5,7 +5,10 @@ from .models import Condom, Gel, WelcomeCard
 
 product_admin_primary_fields = [
     "name_kor",
+    "name_eng",
     "manufacturer_kor",
+    "manufacturer_eng",
+    "category",
     "image",
     "image_tag",
     "thumbnail",
