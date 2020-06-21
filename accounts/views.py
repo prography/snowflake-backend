@@ -38,8 +38,7 @@ class UserAPIView(APIView):
         permission_classes = [permissions.AllowAny]
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        self.perform_create(serializer)
+        serializer.save()
         return Response({"message": "회원가입 완료!"}, status=status.HTTP_201_CREATED)
 
     def get(self, request, format=None):
