@@ -30,7 +30,7 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
         )
 
 
-class UserGetUpdateView(APIView):
+class UserAPIView(APIView):
     permission_classes = [AnonCreateAndUpdateOwnerOnly]
     serializer_class = UserSerializer
 
@@ -60,20 +60,16 @@ class UserGetUpdateView(APIView):
         return Response("{}({})이 비활성화 되었습니다. 재활성화를 위해서는 관리자에게 문의하세요".format(request.user.email, request.user.username))
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserSocialViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+    state_token_code = uuid4().hex
 
     def __init__(self, **kwargs):
         self.kakao_social_login = KakaoSocialLogin()
         self.naver_social_login = NaverSocialLogin(self.state_token_code)
-        super(UserViewSet, self).__init__(**kwargs)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        self.perform_create(serializer)
-        return Response({"message": "회원가입 완료!"}, status=status.HTTP_201_CREATED)
+        super(UserSocialViewSet, self).__init__(**kwargs)
 
     @action(detail=False, methods=['get'], url_path='kakao-login')
     def get_kakao_auth_token(self, request, pk=None):
