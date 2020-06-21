@@ -1,14 +1,11 @@
 import json
 from uuid import uuid4
 
-import requests
-from django.conf import settings
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from rest_framework import permissions, status, viewsets, permissions
+from rest_framework.views import APIView
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from accounts.models import User
 from accounts.serializers.accounts import (CustomUserObtainPairSerializer,
@@ -31,6 +28,27 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return view.action in ['retrieve', 'update',
                                'partial_update'] and obj.id == request.user.id or request.user.is_staff
+
+
+class UserGetUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request, format=None):
+        user = User.objects.filter(id=request.user.id).first()
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def delete(self, request):
+        request.user.is_active = False
+        request.user.save()
+        return Response("{}({})이 비활성화 되었습니다. 재활성화를 위해서는 관리자에게 문의하세요".format(request.user.email, request.user.username))
 
 
 class UserViewSet(viewsets.ModelViewSet):
