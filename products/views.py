@@ -85,5 +85,8 @@ class CondomDetailView(generics.RetrieveAPIView):
     serializer_class = CondomDetailSerializer
     queryset = Condom.objects.all()
 
-
-
+    def get_object(self):
+        obj = super().get_object()
+        obj.num_of_views += 1
+        obj.save()
+        return obj
