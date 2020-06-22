@@ -30,9 +30,9 @@ class KakaoSocialLogin():
         user = User.objects.create(
             email=user_data_per_field['email'],
             username=username,
-            gender=user_data_per_field['gender'],
-            social=user_data_per_field['social'],
-            birth_year=user_data_per_field['birth_year'])
+            # gender=user_data_per_field['gender'],
+            # birth_year=user_data_per_field['birth_year'],
+            social=user_data_per_field['social'])
         return user
 
     def _generate_unique_username(self):
@@ -91,12 +91,16 @@ class KakaoSocialLogin():
         return response.json()
     
     def _parse_user_data(self, user_social_data):
+        """
+        성별, 연령대까지 가져오려 했으나 필요하지 않다고 판단하여 가져오지 않음
+        하지만 언제 쓸지 몰라서 일단 주석처리함
+        """
         user_data_per_field = dict()
 
         user_data_per_field['email'] = self._get_email(user_social_data)
-        user_data_per_field['gender'] = self._get_gender(user_social_data)
         user_data_per_field['social'] = self._get_social(user_social_data)
-        user_data_per_field['birth_year'] = self._get_brith_year(user_social_data)
+        # user_data_per_field['gender'] = self._get_gender(user_social_data)
+        # user_data_per_field['birth_year'] = self._get_brith_year(user_social_data)
 
         return user_data_per_field
 
