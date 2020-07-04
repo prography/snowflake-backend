@@ -8,13 +8,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from likes.models import Like
-from likes.serializers.like import LikeSerializer
+from likes.serializers.like import LikeSerializer, LikeWithProductDetailSerializer
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+
+    def get_serializer_class(self):
+        is_product_detail = self.request.query_params.get('is_product_detail', None)
+        if is_product_detail and is_product_detail.lower() == 'true':
+            return LikeWithProductDetailSerializer
+        return LikeSerializer
+
+    def get_queryset(self):
+        queryset = Like.objects.filter(user=self.request.user)
+        model = self.request.query_params.get('model', None)
+        if model is not None:
+            ct = ContentType.objects.get(model=model)
+            queryset = queryset.filter(content_type=ct.id)
+        object_id = self.request.query_params.get('object_id', None)
+        if object_id is not None:
+            queryset = queryset.filter(object_id=object_id)
+        return queryset
 
     def create(self, request, *args, **kwargs):
         """

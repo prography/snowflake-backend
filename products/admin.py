@@ -18,7 +18,6 @@ product_admin_primary_fields = [
 
 class ProductDetailAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
-        # print(self, obj)
         return mark_safe('<img src="%s" width="150" height="150" />' % (obj.image.url))
 
     image_tag.short_description = "Image 미리보기"
@@ -46,14 +45,14 @@ class ProductDetailAdmin(admin.ModelAdmin):
 
         return self.readonly_fields + ("created_at", "updated_at")
 
-    # admin 페이지에 보여주는 필드 설정
-    def get_fields(self, request, obj=None):
-        form = self._get_form_for_get_fields(request, obj)
-        form_base = [*form.base_fields] + [*self.get_readonly_fields(request, obj)]
-
-        fields = [field for field in form_base if field not in product_admin_primary_fields]
-
-        return product_admin_primary_fields + fields
+    # # admin 페이지에 보여주는 필드 설정
+    # def get_fields(self, request, obj=None):
+    #     form = self._get_form_for_get_fields(request, obj)
+    #     form_base = [*form.base_fields] + [*self.get_readonly_fields(request, obj)]
+    #
+    #     fields = [field for field in form_base if field not in product_admin_primary_fields]
+    #
+    #     return product_admin_primary_fields + fields
 
     list_display = ("id", "name_kor", "manufacturer_kor", "score", "num_of_reviews")
 
