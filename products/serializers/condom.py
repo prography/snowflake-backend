@@ -13,6 +13,7 @@ class CondomListSerializer(serializers.ModelSerializer):
             "thumbnail",
             "manufacturer_kor",
             "manufacturer_eng",
+            "num_of_views",
             "num_of_reviews",
             "category",
             "score",
