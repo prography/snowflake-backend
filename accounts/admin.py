@@ -22,7 +22,7 @@ class UserAdmin(AuthUserAdmin):
     )
 
     readonly_fields = ("image_tag",)
-    list_display = ("email", "username", "social")
+    list_display = ("id", "email", "username", "social")
 
 
 @admin.register(Icon)
