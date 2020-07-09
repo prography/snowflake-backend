@@ -55,6 +55,17 @@ class WelcomeCard(models.Model):
         return self.title
 
 
+def populate_search_field(search_fields):
+    from itertools import permutations
+    permute = permutations(search_fields, 2)
+    result = ""
+    for sf in search_fields:
+        result += "{}\n".format(sf)
+    for p in permute:
+        result += "{}{}\n".format(p[0], p[1])
+    return result
+
+
 class Product(models.Model):
     name_kor = models.CharField(max_length=255, null=True, blank=True)
     name_eng = models.CharField(max_length=255, null=True, blank=True)
@@ -72,9 +83,15 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="업데이트 시간")
     num_of_views = models.BigIntegerField(default=0)
 
+    search_field = models.TextField(blank=True, null=True, default="")
     likes = GenericRelation(Like)
-
     objects = InheritanceManager()
+
+    def save(self, *args, **kwargs):
+        if len(self.search_field) == 0:
+            self.search_field = populate_search_field(
+                (self.name_eng, self.name_kor, self.manufacturer_eng, self.manufacturer_kor))
+        super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{}({})".format(self.name_kor, self.name_eng)
