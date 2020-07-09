@@ -90,3 +90,13 @@ class CondomDetailView(generics.RetrieveAPIView):
         obj.num_of_views += 1
         obj.save()
         return obj
+
+
+class SearchView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CondomListSerializer
+
+    def get_queryset(self):
+        keyword = self.request.query_params.get("keyword", None)
+        queryset = Condom.objects.filter(search_field__icontains=keyword)
+        return queryset

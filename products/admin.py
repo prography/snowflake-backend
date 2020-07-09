@@ -13,6 +13,7 @@ product_admin_primary_fields = [
     "image_tag",
     "thumbnail",
     "thumbnail_tag",
+    "search_field"
 ]
 
 
