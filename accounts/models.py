@@ -20,7 +20,7 @@ def create_image_path(instance, filename):
 
 
 class User(AbstractUser):
-    SOCIAL_CHOICES = (("KAKAO", "kakao"), ("NAVER", "naver"), ("NONE", "none"))
+    SOCIAL_CHOICES = (("KAKAO", "kakao"), ("NAVER", "naver"), ("APPLE", "apple"), ("NONE", "none"))
     GENDER_CHOICES = (("MAN", "남"), ("WOMAN", "여"), ("BOTH", "모두"), ("SECRET", "비공개"), ("NONE", "none"))
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(_("email address"), unique=True)
