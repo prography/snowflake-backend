@@ -2,13 +2,12 @@ from django.conf.urls import include, url
 from rest_framework import routers, serializers, viewsets
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from accounts.models import User
+from accounts.models import User, Icon
 
 
 # Serializers define the API representation.
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=100, write_only=True, style={"input_type": "password"})
-    # password2 = serializers.CharField(max_length=100, write_only=True, style={"input_type": "password"})
 
     class Meta:
         model = User
@@ -23,7 +22,10 @@ class UserSerializer(serializers.ModelSerializer):
             "gender",
             "partner_gender",
             "date_joined",
+            "color",
+            "icon",
         ]
+        depth = 1  # You need only add this sentence.
         extra_kwargs = {"date_joined": {"read_only": True}}
 
     def create(self, validated_data):
@@ -45,6 +47,7 @@ class ReviewUserSerializer(serializers.ModelSerializer):
             "birth_year",
             "image",
         ]
+
 
 class CustomUserObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

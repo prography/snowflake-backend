@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 
-from accounts.models import User
+from accounts.models import User, Icon
 from accounts.serializers.accounts import CustomUserObtainPairSerializer, UserSerializer
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
@@ -27,7 +27,7 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
+                request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
         )
 
 
@@ -48,9 +48,17 @@ class UserAPIView(APIView):
 
     def patch(self, request, format=None):
         user = User.objects.filter(id=request.user.id).first()
+        print(request.data)
         serializer = self.serializer_class(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            # icon 업데이트
+            icon_id = request.data.get('icon', None)
+            if icon_id is None:
+                user.icon = None
+            elif Icon.objects.filter(id=icon_id).count() > 0:
+                user.icon = icon_id
+            user.save()
             return Response(serializer.data)
         return Response(serializer.errors)
 
