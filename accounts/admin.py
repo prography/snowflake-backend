@@ -18,11 +18,11 @@ class UserAdmin(AuthUserAdmin):
         ("Profile", {"fields": ("birth_year", "image", "image_tag")}),
         ("Gender", {"fields": ("gender", "partner_gender")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
-        ("Icon", {"fields": ("icon",)})
+        ("Icon", {"fields": ("icon", "color")})
     )
 
     readonly_fields = ("image_tag",)
-    list_display = ("email", "username", "social")
+    list_display = ("id", "email", "username", "social")
 
 
 @admin.register(Icon)
