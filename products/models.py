@@ -60,9 +60,13 @@ def populate_search_field(search_fields):
     permute = permutations(search_fields, 2)
     result = ""
     for sf in search_fields:
-        result += "{}\n".format(sf)
+        if sf is None:
+            continue
+        result += "{}\n".format(sf.replace())
     for p in permute:
-        result += "{}{}\n".format(p[0], p[1])
+        if None in p:
+            continue
+        result += "{}{}\n".format(p[0].replace(), p[1].replace())
     return result
 
 
