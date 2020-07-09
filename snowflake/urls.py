@@ -64,4 +64,4 @@ urlpatterns = [
     path("update-condom-score", UpdateCondomScore.as_view(), name="update_condom_score"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-admin.site.index_title = "눈송이 v1.0.6"
+admin.site.index_title = "눈송이 v1.1.0"

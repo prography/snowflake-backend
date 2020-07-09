@@ -7,10 +7,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 
-from accounts.models import User
+from accounts.models import User, Icon
 from accounts.serializers.accounts import CustomUserObtainPairSerializer, UserSerializer
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
+from accounts.social_login.apple_social_login import AppleSocialLogin
 
 
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
@@ -26,7 +27,7 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
+                request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
         )
 
 
@@ -47,9 +48,17 @@ class UserAPIView(APIView):
 
     def patch(self, request, format=None):
         user = User.objects.filter(id=request.user.id).first()
+        print(request.data)
         serializer = self.serializer_class(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            # icon 업데이트
+            icon_id = request.data.get('icon', None)
+            if icon_id is None:
+                user.icon = None
+            elif Icon.objects.filter(id=icon_id).count() > 0:
+                user.icon = icon_id
+            user.save()
             return Response(serializer.data)
         return Response(serializer.errors)
 
@@ -68,6 +77,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
     def __init__(self, **kwargs):
         self.kakao_social_login = KakaoSocialLogin()
         self.naver_social_login = NaverSocialLogin(self.state_token_code)
+        self.apple_social_login = AppleSocialLogin()
         super(UserSocialViewSet, self).__init__(**kwargs)
 
     @action(detail=False, methods=['get'], url_path='kakao-login')
@@ -166,6 +176,36 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         user = naver.sign_up(snowflake_user_data)
         return user
 
+    @action(detail=False, methods=['get'], url_path='apple-login-callback')
+    def apple_login_callback(self, request, pk=None):
+        try:
+            identity_token = request.GET.get('identity_token')
+        except KeyError:
+            return Response({'message': 'identity_token값을 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user_data_per_field = self.apple_social_login.get_user_data(identity_token)
+        except Exception as e:
+            return self.error_with_message(e)
+        
+        if self._have_already_sign_up_for_other_social(user_data_per_field):
+            what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
+            return Response({
+                'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
+            user = self.apple_social_login.login(user_data_per_field)
+        else:
+            user = self.apple_social_login.sign_up(user_data_per_field)
+
+        refresh = CustomUserObtainPairSerializer.get_token(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        })
+
+    
 
 @api_view(['GET', ])
 @permission_classes([permissions.AllowAny])

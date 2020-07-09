@@ -16,8 +16,12 @@ class Like(models.Model):
     user = models.ForeignKey(
         User, verbose_name="작성자", on_delete=models.CASCADE, related_name="like"
     )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 시간")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="업데이트 시간")
+
+    class Meta:
+        unique_together = (('content_type', 'object_id', 'user'),)
 
     def __str__(self):
         return "{}-{}-{}".format(self.user, self.content_type.app_label, self.object_id)
