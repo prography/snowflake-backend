@@ -48,7 +48,6 @@ class UserAPIView(APIView):
 
     def patch(self, request, format=None):
         user = User.objects.filter(id=request.user.id).first()
-        print(request.data)
         serializer = self.serializer_class(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -57,7 +56,7 @@ class UserAPIView(APIView):
             if icon_id is None:
                 user.icon = None
             elif Icon.objects.filter(id=icon_id).count() > 0:
-                user.icon = icon_id
+                user.icon_id = icon_id
             user.save()
             return Response(serializer.data)
         return Response(serializer.errors)
