@@ -62,11 +62,11 @@ def populate_search_field(search_fields):
     for sf in search_fields:
         if sf is None:
             continue
-        result += "{}\n".format(sf.replace())
+        result += "{}\n".format(sf.replace(" ", ""))
     for p in permute:
         if None in p:
             continue
-        result += "{}{}\n".format(p[0].replace(), p[1].replace())
+        result += "{}{}\n".format(p[0].replace(" ", ""), p[1].replace(" ", ""))
     return result
 
 
