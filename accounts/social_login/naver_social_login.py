@@ -33,8 +33,6 @@ class NaverSocialLogin():
         user = User.objects.create(
             email=user_data_per_field['email'],
             username=username,
-            # gender=user_data_per_field['gender'],
-            # birth_year=user_data_per_field['birth_year'],
             social=user_data_per_field['social'])
         return user
 
@@ -98,17 +96,11 @@ class NaverSocialLogin():
         
     
     def _parse_user_data(self, user_social_data):
-        """
-        성별, 연령대까지 가져오려 했으나 필요하지 않다고 판단하여 가져오지 않음
-        하지만 언제 쓸지 몰라서 일단 주석처리함
-        """
         user_data = user_social_data.json().get('response')
         user_data_per_field = dict()
 
         user_data_per_field['email'] = self._get_email(user_data)
         user_data_per_field['social'] = self._get_social(user_data)
-        # user_data_per_field['gender'] = self._get_gender(user_data)
-        # user_data_per_field['birth_year'] = self._get_brith_year(user_data)
 
         return user_data_per_field
 
@@ -118,36 +110,5 @@ class NaverSocialLogin():
         except:
             raise ValueError('이메일 정보를 받아올 수 없습니다. 네이버 계정의 권한 설정을 확인하세요.')
 
-    def _get_gender(self, data):
-        try:
-            gender = data.get('gender')
-        except:
-            raise ValueError('성별 정보를 받아올 수 없습니다. 네이버 계정의 권한 설정을 확인하세요.')
-        return self._convert_gender(gender)
-        
-    def _convert_gender(self, gender):
-        if gender == 'M':
-            return 'MAN'
-        elif gender == 'F':
-            return 'WOMAN'
-
     def _get_social(self, data):
         return self.social_type
-
-    def _get_brith_year(self, data):
-        try:
-            age_range = data.get('age')
-        except:
-            raise ValueError('연령대 정보를 받아올 수 없습니다. 네이버 계정의 권한 설정을 확인하세요.')
-        return self._convert_age_range_to_age(age_range)
-    
-    def _convert_age_range_to_age(self, age_range):
-        age = 0
-        for boundary in age_range.split('-'):
-            if boundary.isdecimal():
-                age += int(boundary)
-            else:
-                age += age
-        age //= 2
-        birth_year = datetime.now().year - age
-        return birth_year + 1
