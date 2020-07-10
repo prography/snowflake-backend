@@ -84,12 +84,12 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         url = self.kakao_social_login.get_auth_url()
         return redirect(url)
 
-    @action(detail=False, methods=['get'], url_path='kakao-login-callback')
+    @action(detail=False, methods=['post'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
         try:
             user_data_per_field = self.kakao_social_login.get_user_data(request)
         except Exception as e:
-            return self.error_with_message(e)
+            return self.error_with_message(e)    
 
         if self._have_already_sign_up_for_other_social(user_data_per_field):
             what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
@@ -107,6 +107,30 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
+
+    # @action(detail=False, methods=['get'], url_path='kakao-login-callback')
+    # def kakao_login_callback(self, request, pk=None):
+    #     try:
+    #         user_data_per_field = self.kakao_social_login.get_user_data(request)
+    #     except Exception as e:
+    #         return self.error_with_message(e)
+
+    #     if self._have_already_sign_up_for_other_social(user_data_per_field):
+    #         what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
+    #         return Response({
+    #             'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+
+    #     if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
+    #         user = self.kakao_social_login.login(user_data_per_field)
+    #     else:
+    #         user = self.kakao_social_login.sign_up(user_data_per_field)
+
+    #     refresh = CustomUserObtainPairSerializer.get_token(user)
+    #     return Response({
+    #         'refresh': str(refresh),
+    #         'access': str(refresh.access_token)
+    #     })
 
     def error_with_message(self, e):
         if e.args:
@@ -175,10 +199,11 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         user = naver.sign_up(snowflake_user_data)
         return user
 
-    @action(detail=False, methods=['get'], url_path='apple-login-callback')
+    @action(detail=False, methods=['post'], url_path='apple-login-callback')
     def apple_login_callback(self, request, pk=None):
         try:
-            identity_token = request.GET.get('identity_token')
+            # identity_token = request.GET.get('identity_token')
+            identity_token = request.POST.get('identity_token')
         except KeyError:
             return Response({'message': 'identity_token값을 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -204,7 +229,6 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'access': str(refresh.access_token)
         })
 
-    
 
 @api_view(['GET', ])
 @permission_classes([permissions.AllowAny])
