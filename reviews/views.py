@@ -107,6 +107,11 @@ class UpdateCondomScore(APIView):
         # 점수 업데이트
         for c in Condom.objects.all():
             key = c.id
+
+            # 리뷰가 없는 콘돔 건너뛰기
+            if c.id not in condom:
+                continue
+
             num_of_reviews = condom[key][4]
 
             c.score = condom[key][0] / num_of_reviews
