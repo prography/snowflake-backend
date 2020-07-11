@@ -84,7 +84,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         url = self.kakao_social_login.get_auth_url()
         return redirect(url)
 
-    @action(detail=False, methods=['post'], url_path='kakao-login-callback')
+    @action(detail=False, methods=['get'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
         try:
             # access_token = request.POST.get('access_token')
