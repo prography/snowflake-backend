@@ -87,7 +87,8 @@ class UserSocialViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
         try:
-            user_data_per_field = self.kakao_social_login.get_user_data(request)
+            access_token = request.POST.get('access_token')
+            user_data_per_field = self.kakao_social_login.get_user_data(access_token)
         except Exception as e:
             return self.error_with_message(e)    
 
