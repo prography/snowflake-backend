@@ -72,9 +72,8 @@ class CondomListView(generics.ListAPIView):
         if order is None:
             queryset = queryset.order_by("-score")
         else:
-            if order in ["num_of_reviews", "avg_oily", "avg_thickness", "avg_durability", "num_of_views"]:
-                queryset = queryset.order_by(order)
-                queryset = queryset.reverse()
+            if order in ["num_of_reviews", "avg_oily", "avg_thickness", "avg_durability", "num_of_views", 'num_of_likes']:
+                queryset = queryset.order_by(order).reverse()
             else:
                 raise NotFound()
         return queryset
