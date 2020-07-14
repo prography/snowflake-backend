@@ -1,4 +1,6 @@
-from rest_framework import viewsets, permissions, generics, status
+from django.contrib.contenttypes.models import ContentType
+
+from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,9 +8,9 @@ from rest_framework.permissions import AllowAny
 
 from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
 
-from accounts.models import User
-from reviews.models import ReviewCondom, Review, ReviewGel
+from reviews.models import ReviewCondom, ReviewGel
 from products.models import Condom
+from likes.models import Like
 
 from django.db.models import F, Avg
 
@@ -84,8 +86,8 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
                 raise NotFound()
 
         if order is not None:
-            if order in ['likes']:
-                queryset = queryset.order_by(order)
+            if order in ['num_of_likes']:
+                queryset = queryset.order_by('num_of_likes').reverse()
             else:
                 raise NotFound()
         return queryset
