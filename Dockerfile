@@ -1,4 +1,4 @@
-FROM 333636352495.dkr.ecr.ap-northeast-2.amazonaws.com/snowflake_base:latest
+FROM 333636352495.dkr.ecr.ap-northeast-2.amazonaws.com/snowflake
 WORKDIR /app
 COPY . /app/
 
