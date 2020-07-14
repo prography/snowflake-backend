@@ -86,12 +86,8 @@ class UserSocialViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
-        try:
-            # access_token = request.POST.get('access_token')
-            access_token = request.GET.get('access_token')
-            user_data_per_field = self.kakao_social_login.get_user_data(access_token)
-        except Exception as e:
-            return self.error_with_message(e)    
+        access_token = request.GET.get('access_token')
+        user_data_per_field = self.kakao_social_login.get_user_data(access_token)
 
         if self._have_already_sign_up_for_other_social(user_data_per_field):
             what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
@@ -109,36 +105,6 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
-
-    # @action(detail=False, methods=['get'], url_path='kakao-login-callback')
-    # def kakao_login_callback(self, request, pk=None):
-    #     try:
-    #         user_data_per_field = self.kakao_social_login.get_user_data(request)
-    #     except Exception as e:
-    #         return self.error_with_message(e)
-
-    #     if self._have_already_sign_up_for_other_social(user_data_per_field):
-    #         what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
-    #         return Response({
-    #             'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
-    #         }, status=status.HTTP_400_BAD_REQUEST)
-
-    #     if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
-    #         user = self.kakao_social_login.login(user_data_per_field)
-    #     else:
-    #         user = self.kakao_social_login.sign_up(user_data_per_field)
-
-    #     refresh = CustomUserObtainPairSerializer.get_token(user)
-    #     return Response({
-    #         'refresh': str(refresh),
-    #         'access': str(refresh.access_token)
-    #     })
-
-    def error_with_message(self, e):
-        if e.args:
-            detail = e.args[0]
-            error_name = e.__class__.__name__
-        return Response({"message": f'{error_name}가 발생했습니다. {detail}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def _have_already_sign_up_for_other_social(self, user_data_per_field):
         user = User.objects.filter(email=user_data_per_field['email'])
@@ -160,10 +126,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         if callback_status_token_code != self.naver_social_login.state_token_code:
             return Response({'message': 'state token code is not valid'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        try:
-            user_data_per_field = self.naver_social_login.get_user_data(request)
-        except Exception as e:
-            return self.error_with_message(e)
+        user_data_per_field = self.naver_social_login.get_user_data(request)
 
         if self._have_already_sign_up_for_other_social(user_data_per_field):
             what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
@@ -204,15 +167,11 @@ class UserSocialViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='apple-login-callback')
     def apple_login_callback(self, request, pk=None):
         try:
-            # identity_token = request.GET.get('identity_token')
-            identity_token = request.POST.get('identity_token')
+            identity_token = request.GET.get('identity_token')
         except KeyError:
             return Response({'message': 'identity_token값을 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            user_data_per_field = self.apple_social_login.get_user_data(identity_token)
-        except Exception as e:
-            return self.error_with_message(e)
+        user_data_per_field = self.apple_social_login.get_user_data(identity_token)
         
         if self._have_already_sign_up_for_other_social(user_data_per_field):
             what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
