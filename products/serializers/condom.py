@@ -19,24 +19,24 @@ condom_fields = [
     "avg_oily",
     "avg_thickness",
     "avg_durability",
-    "likes_count",
+    "num_of_likes",
 ]
 
 class CondomListSerializer(serializers.ModelSerializer):
-    likes_count = serializers.SerializerMethodField()
+    num_of_likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Condom
         fields = condom_fields
 
-    def get_likes_count(self, obj):
+    def get_num_of_likes(self, obj):
         content_type = ContentType.objects.get(model='product')
-        likes_count = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
-        return likes_count
+        num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
+        return num_of_likes
 
 
 class CondomDetailSerializer(serializers.ModelSerializer):
-    likes_count = serializers.SerializerMethodField()
+    num_of_likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Condom
@@ -49,10 +49,10 @@ class CondomDetailSerializer(serializers.ModelSerializer):
             "width",
         ]
 
-    def get_likes_count(self, obj):
+    def get_num_of_likes(self, obj):
         content_type = ContentType.objects.get(model='product')
-        likes_count = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
-        return likes_count
+        num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
+        return num_of_likes
 
 
 class CondomTopNSerailzier(serializers.ModelSerializer):
