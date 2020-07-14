@@ -63,6 +63,7 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         score = self.request.query_params.get("score", None)
         gender = self.request.query_params.get("gender", None)
         partner = self.request.query_params.get("partner", None)
+        order = self.request.query_params.get("order", None)
 
         if score is not None:
             if score in ["-total", "total"]:
@@ -79,6 +80,12 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         if partner is not None:
             if partner in ["MAN", "WOMAN"]:
                 queryset = queryset.filter(partner_gender=partner)
+            else:
+                raise NotFound()
+
+        if order is not None:
+            if order in ['likes']:
+                queryset = queryset.order_by(order)
             else:
                 raise NotFound()
         return queryset
