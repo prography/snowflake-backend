@@ -1,15 +1,13 @@
 from django.contrib.contenttypes.models import ContentType
-
 from rest_framework import serializers
 
 from accounts.serializers import accounts
-from likes.serializers.like import LikeSerializer
 
 from reviews.models import ReviewCondom
 from likes.models import Like
 
 
-condom_filelds = [
+condom_fields = [
     "id",
     "product",
     "user",
@@ -32,11 +30,10 @@ class ReviewCondomListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewCondom
-        fields = condom_filelds
+        fields = condom_fields
 
     def get_likes(self, obj):
         content_type = ContentType.objects.get(model='review')
-        print(content_type)
         likes = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
         return likes
 
@@ -46,4 +43,4 @@ class ReviewCondomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewCondom
-        fields = condom_filelds
+        fields = condom_fields
