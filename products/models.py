@@ -89,6 +89,8 @@ class Product(models.Model):
 
     search_field = models.TextField(blank=True, null=True, default="")
     likes = GenericRelation(Like)
+    num_of_likes = models.IntegerField(default=0)
+
     objects = InheritanceManager()
 
     def save(self, *args, **kwargs):
