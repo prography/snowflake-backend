@@ -164,7 +164,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         user = naver.sign_up(snowflake_user_data)
         return user
 
-    @action(detail=False, methods=['post'], url_path='apple-login-callback')
+    @action(detail=False, methods=['get'], url_path='apple-login-callback')
     def apple_login_callback(self, request, pk=None):
         try:
             identity_token = request.GET.get('identity_token')
