@@ -8,7 +8,7 @@ from rest_framework.exceptions import NotFound
 from likes.models import Like
 from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier, CondomDetailSerializer
 from products.serializers.welcome_card import ProductWelcomeCardSerializer
-from products.models import WelcomeCard, Condom
+from products.models import WelcomeCard, Condom, Product
 
 
 class WelcomeCardListReadView(generics.ListAPIView):
@@ -107,9 +107,9 @@ class NumOfLikesUpdateView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        for condom in Condom.objects.all():
+        for product in Product.objects.all():
             content_type = ContentType.objects.get(model='review')
-            num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=condom.id).count()
-            condom.num_of_likes = num_of_likes
-            condom.save()
+            num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=product.id).count()
+            product.num_of_likes = num_of_likes
+            product.save()
         return Response({"message": "Complete"}, status=status.HTTP_200_OK)
