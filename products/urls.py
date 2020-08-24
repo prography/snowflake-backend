@@ -23,5 +23,5 @@ urlpatterns = [
     # 검색
     path("search/", SearchView.as_view(), name="search"),
 
-    path("update-likes-count", NumOfLikesUpdateView.as_view(), name="update_condom_score"),
+    path("update-likes-count", NumOfLikesUpdateView.as_view()),
 ]
