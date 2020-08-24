@@ -1,9 +1,11 @@
-from rest_framework import generics
+from django.contrib.contenttypes.models import ContentType
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 
+from likes.models import Like
 from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier, CondomDetailSerializer
 from products.serializers.welcome_card import ProductWelcomeCardSerializer
 from products.models import WelcomeCard, Condom
@@ -99,3 +101,15 @@ class SearchView(generics.ListAPIView):
         keyword = self.request.query_params.get("keyword", None)
         queryset = Condom.objects.filter(search_field__icontains=keyword)
         return queryset
+
+
+class NumOfLikesUpdateView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        for condom in Condom.objects.all():
+            content_type = ContentType.objects.get(model='review')
+            num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=condom.id).count()
+            condom.num_of_likes = num_of_likes
+            condom.save()
+        return Response({"message": "Complete"}, status=status.HTTP_200_OK)

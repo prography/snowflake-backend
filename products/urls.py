@@ -7,7 +7,7 @@ from products.views import (
     CondomTopNListView,
     CondomTrioView,
     CondomDetailView,
-    SearchView,
+    SearchView, NumOfLikesUpdateView,
 )
 
 
@@ -21,5 +21,7 @@ urlpatterns = [
     path("condom/<int:pk>/", CondomDetailView.as_view(), name="condom-detail"),
 
     # 검색
-    path("search/", SearchView.as_view(), name="search")
+    path("search/", SearchView.as_view(), name="search"),
+
+    path("update-likes-count", NumOfLikesUpdateView.as_view(), name="update_condom_score"),
 ]
