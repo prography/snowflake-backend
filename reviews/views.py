@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 
 from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
 
-from reviews.models import ReviewCondom, ReviewGel
+from reviews.models import ReviewCondom, ReviewGel, Review
 from products.models import Condom
 from likes.models import Like
 
@@ -113,3 +113,15 @@ class UpdateCondomScore(APIView):
             condom.save()
 
         return Response("Complete", status=status.HTTP_200_OK)
+
+
+class NumOfLikesUpdateView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        for review in Review.objects.all():
+            content_type = ContentType.objects.get(model='review')
+            num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=review.id).count()
+            review.num_of_likes = num_of_likes
+            review.save()
+        return Response({"message": "Complete"}, status=status.HTTP_200_OK)
