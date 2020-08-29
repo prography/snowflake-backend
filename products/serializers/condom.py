@@ -1,8 +1,5 @@
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
-
 from products.models import Condom
-from likes.models import Like
 
 
 condom_fields = [
@@ -22,19 +19,11 @@ condom_fields = [
     "num_of_likes",
 ]
 
-class CondomListSerializer(serializers.ModelSerializer):
-    num_of_likes = serializers.SerializerMethodField()
 
+class CondomListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condom
         fields = condom_fields
-
-    def get_num_of_likes(self, obj):
-        content_type = ContentType.objects.get(model='product')
-        num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=obj.id).count()
-        obj.num_of_likes = num_of_likes
-        obj.save()
-        return num_of_likes
 
 
 class CondomDetailSerializer(serializers.ModelSerializer):
