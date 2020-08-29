@@ -1,11 +1,13 @@
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from accounts.serializers import accounts
 
 from reviews.models import ReviewCondom
+from likes.models import Like
 
 
-condom_filelds = [
+condom_fields = [
     "id",
     "product",
     "user",
@@ -18,6 +20,7 @@ condom_filelds = [
     "thickness",
     "durability",
     "content",
+    "num_of_likes",
 ]
 
 
@@ -26,7 +29,7 @@ class ReviewCondomListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewCondom
-        fields = condom_filelds
+        fields = condom_fields
 
 
 class ReviewCondomSerializer(serializers.ModelSerializer):
@@ -34,4 +37,4 @@ class ReviewCondomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewCondom
-        fields = condom_filelds
+        fields = condom_fields

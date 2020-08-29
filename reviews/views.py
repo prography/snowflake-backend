@@ -1,14 +1,16 @@
-from rest_framework import viewsets, permissions, generics, status
-from rest_framework.exceptions import NotFound
+from django.contrib.contenttypes.models import ContentType
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
 from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
 
-from accounts.models import User
-from reviews.models import ReviewCondom, Review, ReviewGel
+from reviews.models import ReviewCondom, ReviewGel, Review
 from products.models import Condom
+from likes.models import Like
 
 from django.db.models import F, Avg
 
@@ -60,29 +62,87 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
             raise MissingProductIdException()
         queryset = queryset.filter(product=product).order_by("-id")
 
-        score = self.request.query_params.get("score", None)
-        gender = self.request.query_params.get("gender", None)
-        partner = self.request.query_params.get("partner", None)
+        _check_parameter_validation()
 
-        if score is not None:
-            if score in ["-total", "total"]:
-                queryset = queryset.order_by(score)
-            else:
-                raise NotFound()
+        _valid_param = {
+            'score': self.request.query_params.get("score", None),
+            'gender': self.request.query_params.get("gender", None),
+            'partner': self.request.query_params.get("partner", None),
+            'order': self.request.query_params.get("order", None)
+        }
 
-        if gender is not None:
-            if gender in ["MAN", "WOMAN"]:
-                queryset = queryset.filter(gender=gender)
-            else:
-                raise NotFound()
+        queryset = _queryset_filter(queryset, _valid_param)
+        queryset = _queryset_order(queryset, _valid_param)
 
-        if partner is not None:
-            if partner in ["MAN", "WOMAN"]:
-                queryset = queryset.filter(partner_gender=partner)
-            else:
-                raise NotFound()
         return queryset
 
+    def _check_parameter_validation(self):
+        if not self._is_valid_score_param():
+            raise ValidationError('Invalid score parameter value')
+        if not self._is_valid_gender_param():
+            raise ValidationError('Invalid gender parameter value')
+        if not self._is_valid_partner_param():
+            raise ValidationError('Invalid partner parameter value')
+        if not self._is_valid_order_param():
+            raise ValidationError('Invalid order parameter value')
+
+    def _is_valid_score_param(self):
+        _valid_score_param = ['total', '-total']
+
+        score = self.request.query_params.get("score", None)
+
+        if score is None or score in _valid_score_param:
+            return True
+        return False
+
+    def _is_valid_gender_param(self):
+        _valid_gender_param = ["MAN", "WOMAN"]
+
+        gender = self.request.query_params.get("gender", None)
+
+        if gender is None or gender in _valid_gender_param:
+            return True
+        return False
+
+    def _is_valid_partner_param(self):
+        _valid_partner_param = ["MAN", "WOMAN"]
+
+        partner = self.request.query_params.get("partner", None)
+
+        if partner is None or partner in _valid_partner_param:
+            return True
+        return False
+
+    def _is_valid_order_param(self):
+        _valid_order_param = ['num_of_likes']
+
+        order = self.request.query_params.get("order", None)
+
+        if order is None or order in _valid_order_param:
+            return True
+        return False
+
+    def _queryset_filter(self, queryset, _valid_param):
+        _db_filed_name_per_target_filter = {
+            'gender': 'gender',
+            'partner': 'partner_gender'
+        }
+
+        for target_filter in _db_filed_name_per_target_filter.keys():
+            if _valid_param[target_filter]:
+                query = {_db_filed_name_per_target_filter[target_filter]: _valid_param[target_filter]}
+                queryset = queryset.filter(**query)
+        
+        return queryset
+
+    def _queryset_order(self, queryset, _valid_param):
+        target_order = ['score', 'order']
+
+        for _order in target_order:
+            if _valid_param[_order]:
+                queryset = queryset.order_by(_order)
+        
+        return queryset
 
 class UpdateCondomScore(APIView):
     permission_classes = [AllowAny]
@@ -104,3 +164,15 @@ class UpdateCondomScore(APIView):
             condom.save()
 
         return Response("Complete", status=status.HTTP_200_OK)
+
+
+class NumOfLikesUpdateView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        for review in Review.objects.all():
+            content_type = ContentType.objects.get(model='review')
+            num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=review.id).count()
+            review.num_of_likes = num_of_likes
+            review.save()
+        return Response({"message": "Complete"}, status=status.HTTP_200_OK)
