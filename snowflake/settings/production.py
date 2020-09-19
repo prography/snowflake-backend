@@ -1,3 +1,4 @@
+import pymysql
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -6,6 +7,9 @@ from .base import *
 DEBUG = False
 # SECURITY WARNING: don't run with debug turned on in production!
 ALLOWED_HOSTS = ['*']
+
+pymysql.version_info = (1, 3, 13, "final", 0)
+pymysql.install_as_MySQLdb()
 
 DATABASES = {
     'default': {
@@ -17,13 +21,14 @@ DATABASES = {
         'PORT': env('MYSQL_PORT'),
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"',
-            'charset' : 'utf8mb4'
+            'charset': 'utf8mb4'
         }
     }
 }
 
-AWS_STORAGE_BUCKET_NAME=env("PRODUCTION_AWS_STORAGE_BUCKET_NAME")
+AWS_STORAGE_BUCKET_NAME = env("PRODUCTION_AWS_STORAGE_BUCKET_NAME")
 AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+
 
 def sentry_before_send(event, hint):
     ignored_exceptions = [KeyboardInterrupt]
@@ -34,6 +39,7 @@ def sentry_before_send(event, hint):
             if isinstance(exc_value, exception):
                 return
     return event
+
 
 sentry_sdk.init(
     dsn=env('SENTRY_DSN'),
