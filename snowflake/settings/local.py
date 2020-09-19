@@ -1,11 +1,12 @@
 from .base import *
-
+import pymysql
 
 DEBUG = True
 
 ALLOWED_HOSTS = ["*", ]
 
-
+pymysql.version_info = (1, 3, 13, "final", 0)
+pymysql.install_as_MySQLdb()
 
 DATABASES = {
     'default': {
@@ -17,10 +18,10 @@ DATABASES = {
         'PORT': env('MYSQL_PORT'),
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"',
-            'charset' : 'utf8mb4'
+            'charset': 'utf8mb4'
         }
     }
 }
 
-AWS_STORAGE_BUCKET_NAME=env("TEST_AWS_STORAGE_BUCKET_NAME")
+AWS_STORAGE_BUCKET_NAME = env("TEST_AWS_STORAGE_BUCKET_NAME")
 AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
