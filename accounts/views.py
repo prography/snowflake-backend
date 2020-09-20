@@ -89,31 +89,25 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         access_token = request.GET.get('access_token')
         user_data_per_field = self.kakao_social_login.get_user_data(access_token)
 
-        if self._have_already_sign_up_for_other_social(user_data_per_field):
-            what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
+        user = User.objects.filter(email=user_data_per_field['email'])
+        if user.count() == 1:
+            user_login_type = user.social
+            refresh = CustomUserObtainPairSerializer.get_token(user)
+
             return Response({
-                'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'message': f'이미 {user_login_type}로 가입했습니다. {user_login_type}로 로그인합니다.',
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            })
 
-        if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
-            user = self.kakao_social_login.login(user_data_per_field)
-        else:
-            user = self.kakao_social_login.sign_up(user_data_per_field)
-
+        user = self.kakao_social_login.sign_up(user_data_per_field)
         refresh = CustomUserObtainPairSerializer.get_token(user)
+
         return Response({
+            'message': f'{user.social}로 로그인합니다.'
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
-
-    def _have_already_sign_up_for_other_social(self, user_data_per_field):
-        user = User.objects.filter(email=user_data_per_field['email'])
-        if user.count() > 1:
-            raise AssertionError('해당 이메일로 가입된 계정이 이미 존재합니다. 관리자에게 문의해주세요.')
-        if user.count() == 1:
-            user = user[0]
-            return user.social == user_data_per_field['social']
-        return False
 
     @action(detail=False, methods=['get'], url_path='naver-login')
     def get_naver_auth_token(self, request, pk=None):
