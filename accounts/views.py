@@ -104,7 +104,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         refresh = CustomUserObtainPairSerializer.get_token(user)
 
         return Response({
-            'message': f'{user.social}로 로그인합니다.'
+            'message': f'{user.social}로 로그인합니다.',
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
