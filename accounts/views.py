@@ -91,6 +91,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
 
         user = User.objects.filter(email=user_data_per_field['email'])
         if user.count() == 1:
+            user = User.objects.get(email=user_data_per_field['email'])
             user_login_type = user.social
             refresh = CustomUserObtainPairSerializer.get_token(user)
 
