@@ -108,8 +108,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'message': f'{user.social}로 로그인합니다.',
             'refresh': str(refresh),
             'access': str(refresh.access_token)
-        })
-
+        }, status=status.HTTP_201_CREATED)
     @action(detail=False, methods=['get'], url_path='naver-login')
     def get_naver_auth_token(self, request, pk=None):
         url = self.naver_social_login.get_auth_url()
