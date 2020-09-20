@@ -88,7 +88,9 @@ class UserSocialViewSet(viewsets.ModelViewSet):
     def kakao_login_callback(self, request, pk=None):
         access_token = request.data.get('access_token')
         if not access_token:
-            raise KeyError('access_token이 존재하지 않습니다.')
+            return Response({
+                'message': 'access_token이 존재하지 않습니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
         user_data_per_field = self.kakao_social_login.get_user_data(access_token)
 
         user = User.objects.filter(email=user_data_per_field['email'])
