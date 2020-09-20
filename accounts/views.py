@@ -84,9 +84,9 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         url = self.kakao_social_login.get_auth_url()
         return redirect(url)
 
-    @action(detail=False, methods=['get'], url_path='kakao-login-callback')
+    @action(detail=False, methods=['post'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
-        access_token = request.GET.get('access_token')
+        access_token = request.data.get('access_token')
         user_data_per_field = self.kakao_social_login.get_user_data(access_token)
 
         user = User.objects.filter(email=user_data_per_field['email'])
@@ -109,6 +109,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         }, status=status.HTTP_201_CREATED)
+
     @action(detail=False, methods=['get'], url_path='naver-login')
     def get_naver_auth_token(self, request, pk=None):
         url = self.naver_social_login.get_auth_url()
