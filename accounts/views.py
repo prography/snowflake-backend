@@ -112,7 +112,7 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             raise AssertionError('해당 이메일로 가입된 계정이 이미 존재합니다. 관리자에게 문의해주세요.')
         if user.count() == 1:
             user = user[0]
-            return user.social != user_data_per_field['social']
+            return user.social == user_data_per_field['social']
         return False
 
     @action(detail=False, methods=['get'], url_path='naver-login')
