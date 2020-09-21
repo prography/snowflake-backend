@@ -50,6 +50,7 @@ class WelcomeCard(models.Model):
     # 이 카드가 보여질지 말지, 삭제된 카드인지 여부
     STATUS_CHOICES = (("DEL", "Deleted"), ("DRAFT", "Draft"), ("PUB", "Published"))
     status = models.CharField(max_length=5, choices=STATUS_CHOICES, default="DRAFT")
+    test_field = models.CharField(max_length=5, default="hello")
 
     def __str__(self):
         return self.title
