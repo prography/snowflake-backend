@@ -163,32 +163,36 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         user = naver.sign_up(snowflake_user_data)
         return user
 
-    @action(detail=False, methods=['get'], url_path='apple-login-callback')
+    @action(detail=False, methods=['post'], url_path='apple-login-callback')
     def apple_login_callback(self, request, pk=None):
-        try:
-            identity_token = request.GET.get('identity_token')
-        except KeyError:
-            return Response({'message': 'identity_token값을 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+        identity_token = request.data.get('identity_token')
+        if not identity_token:
+            return Response({
+                'message': 'identity_token이 존재하지 않습니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         user_data_per_field = self.apple_social_login.get_user_data(identity_token)
-        
-        if self._have_already_sign_up_for_other_social(user_data_per_field):
-            what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
-            return Response({
-                'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
-            user = self.apple_social_login.login(user_data_per_field)
-        else:
-            user = self.apple_social_login.sign_up(user_data_per_field)
 
+        user = User.objects.filter(email=user_data_per_field['email'])
+        if user.count() == 1:
+            user = User.objects.get(email=user_data_per_field['email'])
+            user_login_type = user.social
+            refresh = CustomUserObtainPairSerializer.get_token(user)
+
+            return Response({
+                'message': f'이미 {user_login_type}로 가입했어요. {user_login_type}로 로그인합니다.',
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            })
+        
+        user = self.apple_social_login.sign_up(user_data_per_field)
         refresh = CustomUserObtainPairSerializer.get_token(user)
+
         return Response({
+            'message': f'{user.social}로 로그인합니다.',
             'refresh': str(refresh),
             'access': str(refresh.access_token)
-        })
-
+        }, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', ])
 @permission_classes([permissions.AllowAny])
