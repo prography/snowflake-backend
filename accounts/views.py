@@ -79,11 +79,6 @@ class UserSocialViewSet(viewsets.ModelViewSet):
         self.apple_social_login = AppleSocialLogin()
         super(UserSocialViewSet, self).__init__(**kwargs)
 
-    @action(detail=False, methods=['get'], url_path='kakao-login')
-    def get_kakao_auth_token(self, request, pk=None):
-        url = self.kakao_social_login.get_auth_url()
-        return redirect(url)
-
     @action(detail=False, methods=['post'], url_path='kakao-login-callback')
     def kakao_login_callback(self, request, pk=None):
         access_token = request.data.get('access_token')
@@ -91,11 +86,11 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             return Response({
                 'message': 'access_token이 존재하지 않습니다.'
             }, status=status.HTTP_400_BAD_REQUEST)
-        user_data_per_field = self.kakao_social_login.get_user_data(access_token)
 
-        user = User.objects.filter(email=user_data_per_field['email'])
-        if user.count() == 1:
-            user = User.objects.get(email=user_data_per_field['email'])
+        user_data_per_field = self.kakao_social_login.get_user_data(access_token)
+        user = User.get_user_or_none(email=user_data_per_field['email'])
+        
+        if user:
             user_login_type = user.social
             refresh = CustomUserObtainPairSerializer.get_token(user)
 
