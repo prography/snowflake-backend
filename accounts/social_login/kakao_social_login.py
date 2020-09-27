@@ -51,34 +51,9 @@ class KakaoSocialLogin():
         return code_request_url
 
     def get_user_data(self, access_token):
-        # code = self._get_code(request)
-        # access_token = self._get_access_token(code)
         user_social_data = self._get_user_social_data(access_token)
         return self._parse_user_data(user_social_data)
         
-    # def _get_code(self, request):
-    #     try:
-    #         code = request.POST.get('code')
-    #         return code
-    #     except KeyError:
-    #         raise AssertionError('카카오의 code 값을 입력해주세요.')
-    
-    # def _get_access_token(self, code):
-    #     headers = {'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'}
-    #     body = {
-    #         'grant_type': "authorization_code",
-    #         'client_id': self.app_key,
-    #         'redirect_uri': self.redirect_uri,
-    #         'code': code
-    #     }
-
-    #     try:
-    #         response = requests.post(self.access_token_request_url, headers=headers, data=body)
-    #         access_token = response.json()['access_token']
-    #     except Exception as e:
-    #         raise AssertionError('카카오 액세스 토큰을 가져오는데 실패했습니다.')
-    #     return access_token
-
     def _get_user_social_data(self, access_token):
         headers = {'Authorization': f'Bearer {access_token}',
                    'Content-type': 'application/x-www-form-urlencoded; charset=utf-8'}
