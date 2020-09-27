@@ -6,7 +6,7 @@ import requests
 from django.conf import settings
 
 from accounts.models import User
-
+from rest_framework.exceptions import ValidationError
 
 class AppleSocialLogin():
     social_type = 'APPLE'
@@ -49,8 +49,8 @@ class AppleSocialLogin():
 
     def _get_email(self, payload):
         try:
-            if not payload['email_verified']:
-                raise AssertionError('애플 계정 이메일 인증을 확인해주세요.')
+            if payload.get('email_verified') is None:
+                raise ValidationError(detail='애플 계정 이메일 인증을 확인해주세요.')
             return payload['email']
         except KeyError as e:
-            raise AssertionError('애플 로그인 중 이메일을 가져올 수 없습니다.')
+            raise ValidationError(detail='애플 로그인 중 이메일을 가져올 수 없습니다.')
