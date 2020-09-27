@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
 
 from .managers import UserManager
 
@@ -66,3 +67,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @classmethod
+    def get_user_or_none(cls, email):
+        try:
+            user = cls.objects.get(email=email)
+        except ObjectDoesNotExist:
+            user = None
+
+        return user
