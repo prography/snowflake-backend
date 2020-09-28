@@ -6,7 +6,7 @@ import requests
 from django.conf import settings
 
 from accounts.models import User
-from rest_framework.exceptions import ValidationError
+from snowflake.exception import JWTDecodeError, InvalidEmailError
 
 class AppleSocialLogin():
     social_type = 'APPLE'
@@ -20,7 +20,7 @@ class AppleSocialLogin():
         user = User.objects.filter(email=user_data_per_field['email'])
         if user:
             raise AssertionError(f'이미 {user.social}로 가입했습니다. {user.social}로 로그인 해주세요.')
-        
+
         username = self._generate_unique_username()
         user = User.objects.create(
             email=user_data_per_field['email'],
@@ -35,9 +35,12 @@ class AppleSocialLogin():
         return username
 
     def get_user_data(self, identity_token):
-        encoded_jwt = identity_token
-        payload = jwt.decode(encoded_jwt, verify=False)
-        return self._parse_payload(payload)
+        try:
+            encoded_jwt = identity_token
+            payload = jwt.decode(encoded_jwt, verify=False)
+            return self._parse_payload(payload)
+        except jwt.exceptions.DecodeError:
+            raise JWTDecodeError()
 
     def _parse_payload(self, payload):
         user_data_per_field = dict()
@@ -49,8 +52,6 @@ class AppleSocialLogin():
 
     def _get_email(self, payload):
         try:
-            if payload.get('email_verified') is None:
-                raise ValidationError(detail='애플 계정 이메일 인증을 확인해주세요.')
             return payload['email']
         except KeyError as e:
-            raise ValidationError(detail='애플 로그인 중 이메일을 가져올 수 없습니다.')
+            raise InvalidEmailError()
