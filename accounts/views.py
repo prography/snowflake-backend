@@ -7,12 +7,14 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 
-from accounts.models import User, Icon
+from accounts.models import Icon
+from django.contrib.auth import get_user_model
 from accounts.serializers.accounts import CustomUserObtainPairSerializer, UserSerializer
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
 from accounts.social_login.apple_social_login import AppleSocialLogin
 
+User = get_user_model()
 
 class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     """
