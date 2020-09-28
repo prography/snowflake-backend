@@ -66,3 +66,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @classmethod
+    def get_user_or_none(cls, email):
+        try:
+            user = cls.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+
+        return user
