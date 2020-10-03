@@ -73,11 +73,10 @@ class UserSocialViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
-    state_token_code = uuid4().hex
 
     def __init__(self, **kwargs):
         self.kakao_social_login = KakaoSocialLogin()
-        self.naver_social_login = NaverSocialLogin(self.state_token_code)
+        self.naver_social_login = NaverSocialLogin()
         self.apple_social_login = AppleSocialLogin()
         super(UserSocialViewSet, self).__init__(**kwargs)
 
@@ -111,54 +110,43 @@ class UserSocialViewSet(viewsets.ModelViewSet):
             'access': str(refresh.access_token)
         }, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['get'], url_path='naver-login')
-    def get_naver_auth_token(self, request, pk=None):
-        url = self.naver_social_login.get_auth_url()
-        return redirect(url)
 
-    @action(detail=False, methods=['get'], url_path='naver-login-callback')
+    @action(detail=False, methods=['post'], url_path='naver-login-callback')
     def naver_login_callback(self, request, pk=None):
-        callback_status_token_code = request.query_params.get('state')
-        if callback_status_token_code != self.naver_social_login.state_token_code:
-            return Response({'message': 'state token code is not valid'}, status=status.HTTP_401_UNAUTHORIZED)
+        code = request.data.get('code')
+        state = request.data.get('state')
 
-        user_data_per_field = self.naver_social_login.get_user_data(request)
-
-        if self._have_already_sign_up_for_other_social(user_data_per_field):
-            what_social_did_user_already_sign_up = User.objects.get(email=user_data_per_field['email']).social
+        not_exist_field = list()
+        if code is None:
+            not_exist_field.append('code')
+        if state is None:
+            not_exist_field.append('state')
+        if not_exist_field:
             return Response({
-                'message': f'이미 {what_social_did_user_already_sign_up}로 가입했습니다. {what_social_did_user_already_sign_up}로 로그인 해주세요.'
+                'message': ','.join(not_exist_field) + '이/가 존재하지 않습니다.'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        if User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
-            user = self.naver_social_login.login(user_data_per_field)
-        else:
-            user = self.naver_social_login.sign_up(user_data_per_field)
+        user_data_per_field = self.naver_social_login.get_user_data(code, state)
+        user = User.get_user_or_none(email=user_data_per_field['email'])
 
+        if user:
+            user_login_type = user.social
+            refresh = CustomUserObtainPairSerializer.get_token(user)
+
+            return Response({
+                'message': f'이미 {user_login_type}로 가입했어요. {user_login_type}로 로그인합니다.',
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            })
+
+        user = self.naver_social_login.sign_up(user_data_per_field)
         refresh = CustomUserObtainPairSerializer.get_token(user)
+
         return Response({
+            'message': f'{user.social}로 로그인합니다.',
             'refresh': str(refresh),
             'access': str(refresh.access_token)
-        })
-
-    def _naver_login_or_sign_up(self, snowflake_user_data):
-        email = snowflake_user_data['email']
-        social = snowflake_user_data['social']
-        user = User.objects.filter(email=email)
-
-        if user.exists():
-            user = User.objects.get(email=email)
-            if user.social == social:
-                user = naver.login(snowflake_user_data)
-                return user
-            else:
-                already_signup_social = user.social
-                if already_signup_social == 'NONE':
-                    already_signup_social = "눈송이"
-                return already_signup_social
-
-        user = naver.sign_up(snowflake_user_data)
-        return user
+        }, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post'], url_path='apple-login-callback')
     def apple_login_callback(self, request, pk=None):
