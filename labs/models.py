@@ -86,6 +86,12 @@ class Evaluation(models.Model):
     recommend_type = models.CharField(
         max_length=20, choices=RECOMMEND_TYPE_CHOICES)
 
+    class Meta:
+        unique_together = [['user', 'sutra']]
+
+    def __str__(self):
+        return f'{self.user}의 {self.sutra}에 대한 eval'
+
 
 class Sutra(models.Model):
     name_kor = models.CharField(max_length=255, null=True, blank=True)
