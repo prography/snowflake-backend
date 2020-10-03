@@ -12,12 +12,8 @@ class NaverSocialLogin():
     app_key = settings.NAVER_APP_KEY
     app_secret_key = settings.NAVER_APP_SECRET_KEY
     redirect_uri = settings.NAVER_REDIRECT_URI
-    code_request_url = 'https://nid.naver.com/oauth2.0/authorize'
     access_token_request_url = 'https://nid.naver.com/oauth2.0/token'
     user_data_request_url = 'https://openapi.naver.com/v1/nid/me'
-
-    def __init__(self, state_token_code):
-        self.state_token_code = state_token_code
 
     def login(self, user_data_per_field):
         if not User.objects.filter(email=user_data_per_field['email'], social=user_data_per_field['social']):
@@ -25,7 +21,7 @@ class NaverSocialLogin():
         return User.objects.get(email=user_data_per_field['email'], social=user_data_per_field['social'])
     
     def sign_up(self, user_data_per_field):
-        user = User.objects.filter(email=user_data_per_field['email'])
+        user = User.get_user_or_none(email=user_data_per_field['email'])
         if user:
             raise AssertionError(f'이미 {user.social}로 가입했습니다. {user.social}로 로그인 해주세요.')
         
@@ -42,45 +38,29 @@ class NaverSocialLogin():
             username = uuid4().hex[:8]
         return username
 
-    def get_auth_url(self):
-        body = {
-            'client_id': self.app_key,
-            'response_type': 'code',
-            'redirect_uri': self.redirect_uri,
-            'state': self.state_token_code
-        }
-        query_string = '&'.join(['%s=%s' % (key, value) for (key, value) in body.items()])
-        code_request_url = f'{self.code_request_url}?{query_string}'
-        return code_request_url
-
-    def get_user_data(self, request):
-        code = self._get_code(request)
-        access_token_by_type = self._get_access_token_by_type(code)
+    def get_user_data(self, code, status):
+        access_token_by_type = self._get_access_token_by_type(code, status)
         user_social_data = self._get_user_social_data(access_token_by_type)
         return self._parse_user_data(user_social_data)
         
-    def _get_code(self, request):
-        code = request.query_params.get('code', None)
-        if code is None:
-            raise AssertionError('네이버 코드를 가져오는데 실패했습니다.')
-        return code
-    
-    def _get_access_token_by_type(self, code):
+    def _get_access_token_by_type(self, code, status):
         body = {
             'client_id': self.app_key,
             'client_secret': self.app_secret_key,
             'grant_type': 'authorization_code',
-            'state': self.state_token_code,
+            'state': status,
             'code': code
         }
+
         query_string = '&'.join(['%s=%s' % (key, value) for (key, value) in body.items()])
         access_token_request_url = f'{self.access_token_request_url}?{query_string}'
+
         try:
             response = requests.get(access_token_request_url)
             access_token = response.json()['access_token']
             token_type = response.json()['token_type']
         except Exception as e:
-            raise AssertionError('네이버 액세스 토큰을 가져오는데 실패했습니다.')
+            raise AssertionError('네이버 액세스 토큰을 가져오는데 실패했습니다. 재시도 해주세요.')
         return {
             'access_token': access_token,
             'token_type': token_type
@@ -100,7 +80,7 @@ class NaverSocialLogin():
         user_data_per_field = dict()
 
         user_data_per_field['email'] = self._get_email(user_data)
-        user_data_per_field['social'] = self._get_social(user_data)
+        user_data_per_field['social'] = self._get_social()
 
         return user_data_per_field
 
@@ -110,5 +90,5 @@ class NaverSocialLogin():
         except:
             raise ValueError('이메일 정보를 받아올 수 없습니다. 네이버 계정의 권한 설정을 확인하세요.')
 
-    def _get_social(self, data):
+    def _get_social(self):
         return self.social_type
