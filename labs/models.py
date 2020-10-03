@@ -12,7 +12,7 @@ def create_path(instance, filename):
     # 확장자 추출
     extension = os.path.splitext(filename)[-1].lower()
     # 결합 후 return
-    return "/".join(["home", "welcome_card", "image", ymd_path + "-" + uuid_name + extension])
+    return "/".join(["labs", "welcome_card", "image", ymd_path + "-" + uuid_name + extension])
 
 
 class WelcomeCard(models.Model):
@@ -72,7 +72,8 @@ def create_image_path(instance, filename):
 
 
 class Evaluation(models.Model):
-    RECOMMEND_TYPE_CHOICES = (("RECOMMEND", "추천"), ("UNRECOMMEND", "비추천"), ("NOTYET", "안해봄"))
+    RECOMMEND_TYPE_CHOICES = (
+        ("RECOMMEND", "추천"), ("UNRECOMMEND", "비추천"), ("NOTYET", "안해봄"))
     USER_TYPE_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"))
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -81,7 +82,6 @@ class Evaluation(models.Model):
         max_length=10, choices=USER_TYPE_CHOICES)
     recommend_type = models.CharField(
         max_length=20, choices=RECOMMEND_TYPE_CHOICES)
-    
 
 
 class Sutra(models.Model):
@@ -107,7 +107,8 @@ class Sutra(models.Model):
 
 
 class SutraComment(models.Model):
-    USER_POSITION_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"), ("NONE", "선택안함"))
+    USER_POSITION_CHOICES = (
+        ("PURPLE", "보라두리"), ("SKY", "하늘이"), ("NONE", "선택안함"))
 
     sutra = models.ForeignKey(Sutra, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
