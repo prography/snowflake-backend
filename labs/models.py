@@ -1,8 +1,5 @@
-import os
-from uuid import uuid4
-
 from django.db import models
-from django.utils import timezone
+from home.models import DesignType
 
 
 def create_path(instance, filename):
@@ -15,18 +12,6 @@ def create_path(instance, filename):
     return "/".join(["home", "welcome_card", "image", ymd_path + "-" + uuid_name + extension])
 
 
-class DesignType(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.title
-
-    # TODO: 대문자로 변환해서 저장
-    # def save():
-    #     대문자로 변환
-
-
-# Create your models here.
 class WelcomeCard(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -41,14 +26,14 @@ class WelcomeCard(models.Model):
     image = models.ImageField(upload_to=create_path, blank=True, null=True)
 
     design_type = models.ForeignKey(
-        DesignType, on_delete=models.SET_NULL, null=True, related_name="home_welcome_card")
+        DesignType, on_delete=models.SET_NULL, null=True, related_name="lab_welcome_card")
 
-    CATEGORY_CHOICES = (("NONE", "지정안됨"), ("PROD", "제품"),
-                        ("LAB", "실험실"), ("COMMU", "상담소"))
+    CATEGORY_CHOICES = (("NONE", "지정안됨"), ("SUTRA", "눈송수트라"),
+                        ("ATOZ", "A to Z"), ("SONG_DOCTOR", "송박사의 연구소"))
     # 카드의 메인 화면에서의 위치 지정
     category = models.CharField(
-        max_length=5, choices=CATEGORY_CHOICES, default="NONE")
-    col = models.IntegerField(default=-1)
+        max_length=30, choices=CATEGORY_CHOICES, default="NONE")
+    sequence = models.IntegerField(default=-1)
 
     # 이 카드가 보여질지 말지, 삭제된 카드인지 여부
     STATUS_CHOICES = (("DEL", "Deleted"), ("DRAFT", "Draft"),
