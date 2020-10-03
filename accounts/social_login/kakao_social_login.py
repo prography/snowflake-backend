@@ -12,8 +12,6 @@ class KakaoSocialLogin():
     social_type = 'KAKAO'
     app_key = settings.KAKAO_APP_KEY
     redirect_uri = settings.KAKAO_REDIRECT_URI
-    code_request_url = 'https://kauth.kakao.com/oauth/authorize'
-    access_token_request_url = 'https://kauth.kakao.com/oauth/token'
     user_data_request_url = 'https://kapi.kakao.com/v2/user/me'
 
     def login(self, user_data_per_field):
@@ -22,8 +20,8 @@ class KakaoSocialLogin():
         return User.objects.get(email=user_data_per_field['email'], social=user_data_per_field['social'])
     
     def sign_up(self, user_data_per_field):
-        user = User.objects.filter(email=user_data_per_field['email'])
-        if user.count():
+        user = User.get_user_or_none(email=user_data_per_field['email'])
+        if user:
             raise AssertionError(f'이미 {user.social}로 가입했습니다. {user.social}로 로그인 해주세요.')
         
         username = self._generate_unique_username()
@@ -38,17 +36,6 @@ class KakaoSocialLogin():
         while User.objects.filter(username=username).exists():
             username = uuid4().hex[:8]
         return username
-
-    def get_auth_url(self):
-        body = {
-            'client_id': self.app_key,
-            'redirect_uri': self.redirect_uri,
-            'response_type': 'code',
-            'scope': 'account_email'
-        }
-        query_string = '&'.join(['%s=%s' % (key, value) for (key, value) in body.items()])
-        code_request_url = f'{self.code_request_url}?{query_string}'
-        return code_request_url
 
     def get_user_data(self, access_token):
         user_social_data = self._get_user_social_data(access_token)
