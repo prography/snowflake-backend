@@ -15,6 +15,17 @@ def create_path(instance, filename):
     return "/".join(["home", "welcome_card", "image", ymd_path + "-" + uuid_name + extension])
 
 
+class DesignType(models.Model):
+    title = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.title
+
+    # TODO: 대문자로 변환해서 저장
+    # def save():
+    #     대문자로 변환
+
+
 # Create your models here.
 class WelcomeCard(models.Model):
     title = models.CharField(max_length=255)
@@ -29,16 +40,21 @@ class WelcomeCard(models.Model):
     # WelcomeCard의 이미지
     image = models.ImageField(upload_to=create_path, blank=True, null=True)
 
-    design_type = models.CharField(max_length=50, default='DEFAULT')
+    design_type = models.ForeignKey(
+        DesignType, on_delete=models.SET_NULL, null=True, related_name="home_welcome_card")
 
-    CATEGORY_CHOICES = (("NONE", "지정안됨"), ("PROD", "제품"), ("LAB", "실험실"), ("COMMU", "상담소"))
+    CATEGORY_CHOICES = (("NONE", "지정안됨"), ("PROD", "제품"),
+                        ("LAB", "실험실"), ("COMMU", "상담소"))
     # 카드의 메인 화면에서의 위치 지정
-    category = models.CharField(max_length=5, choices=CATEGORY_CHOICES, default="NONE")
+    category = models.CharField(
+        max_length=5, choices=CATEGORY_CHOICES, default="NONE")
     col = models.IntegerField(default=-1)
 
     # 이 카드가 보여질지 말지, 삭제된 카드인지 여부
-    STATUS_CHOICES = (("DEL", "Deleted"), ("DRAFT", "Draft"), ("PUB", "Published"))
-    status = models.CharField(max_length=5, choices=STATUS_CHOICES, default="DRAFT")
+    STATUS_CHOICES = (("DEL", "Deleted"), ("DRAFT", "Draft"),
+                      ("PUB", "Published"))
+    status = models.CharField(
+        max_length=5, choices=STATUS_CHOICES, default="DRAFT")
 
     def __str__(self):
         return self.title

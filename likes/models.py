@@ -8,8 +8,12 @@ from accounts.models import User
 class Like(models.Model):
     # Content type
     limit = models.Q(app_label='products', model='product') | \
-            models.Q(app_label='reviews', model='review')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to=limit)
+        models.Q(app_label='reviews', model='review') | \
+        models.Q(app_label='labs', model='sutra') | \
+        models.Q(app_label='labs', model='sutracomment')
+
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=limit)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 

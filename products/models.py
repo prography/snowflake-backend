@@ -7,7 +7,7 @@ from model_utils.managers import InheritanceManager
 from django.utils import timezone
 
 from likes.models import Like
-
+from home.models import DesignType
 
 def create_path(directory, filename):
     ymd_path = timezone.localtime().strftime("%Y-%m-%d-%H%M%S")
@@ -40,7 +40,8 @@ class WelcomeCard(models.Model):
     # WelcomeCard의 이미지
     image = models.ImageField(upload_to=create_path, blank=True, null=True)
 
-    design_type = models.CharField(max_length=50, default="DEFAULT")
+    design_type = models.ForeignKey(
+        DesignType, on_delete=models.SET_NULL, null=True, related_name="product_welcome_card")
 
     CATEGORY_CHOICES = (("NONE", "지정안됨"), ("PROD", "제품"), ("LAB", "실험실"), ("COMMU", "상담소"))
     # 카드의 메인 화면에서의 위치 지정
