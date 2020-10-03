@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericRelation
 from home.models import DesignType
+from likes.models import Like
 
 
 def create_path(instance, filename):
@@ -43,3 +46,76 @@ class WelcomeCard(models.Model):
 
     def __str__(self):
         return self.title
+
+
+def create_path(directory, filename):
+    ymd_path = timezone.localtime().strftime("%Y-%m-%d-%H%M%S")
+    # 길이 32 인 uuid 값
+    uuid_name = uuid4().hex
+    # 확장자 추출
+    extension = os.path.splitext(filename)[-1].lower()
+    # 결합 후 return
+    return "/".join(["labs", "sutra", directory, ymd_path + "-" + uuid_name + extension])
+
+
+def create_thumbnail_path(instance, filename):
+    return create_path("thumbnail", filename)
+
+
+def create_image_path(instance, filename):
+    return create_path("image", filename)
+
+    STATUS_CHOICES = (("DEL", "Deleted"), ("DRAFT", "Draft"),
+                      ("PUB", "Published"))
+    status = models.CharField(
+        max_length=5, choices=STATUS_CHOICES, default="DRAFT")
+
+
+class Evaluation(models.Model):
+    RECOMMEND_TYPE_CHOICES = (("RECOMMEND", "추천"), ("UNRECOMMEND", "비추천"), ("NOTYET", "안해봄"))
+    USER_TYPE_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"))
+
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    sutra = models.ForeignKey('Sutra', on_delete=models.CASCADE)
+    user_type = models.CharField(
+        max_length=10, choices=USER_TYPE_CHOICES)
+    recommend_type = models.CharField(
+        max_length=20, choices=RECOMMEND_TYPE_CHOICES)
+    
+
+
+class Sutra(models.Model):
+    name_kor = models.CharField(max_length=255, null=True, blank=True)
+    name_eng = models.CharField(max_length=255, null=True, blank=True)
+
+    thumbnail = models.ImageField(
+        upload_to=create_thumbnail_path, blank=True, null=True)
+    image = models.ImageField(
+        upload_to=create_image_path, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    likes = GenericRelation(Like)
+
+    purple_recommends_count = models.IntegerField(
+        default=0, help_text="보라두리의 추천수")
+    purple_unrecommends_count = models.IntegerField(
+        default=0, help_text="보라두리의 비추천수")
+    sky_recommends_count = models.IntegerField(default=0, help_text="하늘이의 추천수")
+    sky_unrecommends_count = models.IntegerField(
+        default=0, help_text="하늘이의 비추천수")
+    not_yet_count = models.IntegerField(default=0, help_text="안해봤어요 수")
+    likes_count = models.IntegerField(default=0, help_text="찜 수")
+
+
+class SutraComment(models.Model):
+    USER_POSITION_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"), ("NONE", "선택안함"))
+
+    sutra = models.ForeignKey(Sutra, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user_position = models.CharField(
+        max_length=20, choices=USER_POSITION_CHOICES)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    likes = GenericRelation(Like)
+    likes_count = models.IntegerField(default=0, help_text="찜 수")
+    # TODO: 신고 추가
