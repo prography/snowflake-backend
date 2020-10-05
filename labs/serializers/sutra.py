@@ -18,7 +18,7 @@ class SutraListSerializer(serializers.ModelSerializer):
             .select_related('user') \
             .values('user__username', 'content') \
             .all()[random_idx]
-
+        
         return {
             "username": comment["user__username"],
             "content": comment["content"]
@@ -32,20 +32,13 @@ class SutraListSerializer(serializers.ModelSerializer):
             return None
         recommends_count = obj.purple_recommends_count + obj.sky_recommends_count
         unrecommends_count = obj.purple_unrecommends_count + obj.sky_unrecommends_count
-        if recommends_count >= unrecommends_count:
-            is_more_recommend = True
-            percentage = (recommends_count /
-                          (recommends_count + unrecommends_count)) * 100
-            purple_count = obj.purple_recommends_count
-            sky_count = obj.sky_recommends_count
-        else:
-            is_more_recommend = False
-            percentage = (unrecommends_count /
-                          (recommends_count + unrecommends_count)) * 100
-            purple_count = obj.purple_unrecommends_count
-            sky_count = obj.sky_unrecommends_count
+
+        percentage = (recommends_count /
+                        (recommends_count + unrecommends_count)) * 100
+        purple_count = obj.purple_recommends_count
+        sky_count = obj.sky_recommends_count
+
         return {
-            "is_more_recommend": is_more_recommend,
             "percentage": percentage,
             "purple_count": purple_count,
             "sky_count": sky_count
