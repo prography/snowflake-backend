@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import F, Count
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -12,7 +13,40 @@ class SutraListView(generics.ListAPIView):
     # 이거 왜 AllowAny?
     permission_classes = [AllowAny]
     serializer_class = SutraListSerializer
-    queryset = Sutra.objects.all()
+
+    def get_queryset(self):
+        # ordering : 최신순, 평가개수순, 추천순, 비추천순, 안해봤어요 순, 찜순
+        order = self.request.query_params.get("order", None)
+        queryset = Sutra.objects.all()
+
+        
+        # 최신순
+        if order is None:
+            queryset = queryset.order_by('-id')
+        # 평가개수순
+        elif order == 'evaluation':
+            queryset = queryset \
+                .annotate(eval_count=F("purple_recommends_count")+F("purple_unrecommends_count")+F("sky_recommends_count")+F("sky_unrecommends_count")+F("not_yet_count")) \
+                .order_by('-eval_count')
+        # 추천순
+        elif order == 'recommend':
+            queryset = queryset \
+                .annotate(recommends_count=F("purple_recommends_count")+F("purple_unrecommends_count")) \
+                .order_by('-recommends_count')
+        # 비추천순
+        elif order == 'unrecommend':
+            queryset = queryset \
+                .annotate(unrecommends_count=F("sky_recommends_count")+F("sky_unrecommends_count")) \
+                .order_by('-unrecommends_count')
+        # 안해봤어요 순
+        elif order == 'notyet':
+            queryset = queryset.order_by('-not_yet_count')
+
+        # 찜순
+        elif order == 'like':
+            queryset = queryset.order_by('-likes_count')
+
+        return queryset
 
 
 class EvaluationView(APIView):
