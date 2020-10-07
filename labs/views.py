@@ -32,7 +32,7 @@ class SutraListView(generics.ListAPIView):
         else:
             recommend_type = filtering.upper()
             queryset = Sutra.objects.filter(
-                evaluations__use=self.request.user,
+                evaluations__user=self.request.user,
                 evaluations__recommend_type=recommend_type)
 
         # 최신순
