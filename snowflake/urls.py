@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url
+from django.conf import settings
 from django.urls import path, include
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -66,3 +67,9 @@ urlpatterns = [
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.1.2"
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]
