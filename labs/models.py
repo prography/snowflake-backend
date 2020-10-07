@@ -80,7 +80,8 @@ class Evaluation(models.Model):
     USER_TYPE_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"))
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    sutra = models.ForeignKey('Sutra', on_delete=models.CASCADE)
+    sutra = models.ForeignKey(
+        'Sutra', related_name='evaluations', on_delete=models.CASCADE)
     user_type = models.CharField(
         max_length=10, choices=USER_TYPE_CHOICES)
     recommend_type = models.CharField(
