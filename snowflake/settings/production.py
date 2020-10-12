@@ -14,10 +14,10 @@ pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('PRODUCTION_MYSQL_NAME'),
+        'NAME': env('TEST_MYSQL_NAME'),
         'USER': env('MYSQL_USER'),
         'PASSWORD': env('MYSQL_PASSWORD'),
-        'HOST': env('PRODUCTION_MYSQL_HOST'),
+        'HOST': env('TEST_MYSQL_HOST'),
         'PORT': env('MYSQL_PORT'),
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"',
