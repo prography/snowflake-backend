@@ -4,6 +4,8 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from .serializers.sutra import SutraListSerializer
 from .serializers.evaluation import EvaluationSerializer
 from .models import Sutra, Evaluation
@@ -80,6 +82,8 @@ class EvaluationView(APIView):
         sutra = get_object_or_404(Sutra, id=sutra_id)
         return sutra
 
+
+    @swagger_auto_schema(request_body=EvaluationSerializer, responses={201: "Evaluation 생성"})
     def post(self, request, sutra_id):
         sutra = self.get_object_sutra(sutra_id)
 

@@ -22,3 +22,10 @@ class EvaluationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"message": f"{user}의 {sutra}에 대한 evaluation이 이미 존재합니다."})
         return evaluation
+
+    class Meta:
+        model = Evaluation
+
+        fields = [
+            'recommend_type'
+        ]
