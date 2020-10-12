@@ -83,7 +83,7 @@ class EvaluationView(APIView):
         return sutra
 
 
-    @swagger_auto_schema(request_body=EvaluationSerializer, responses={201: "Evaluation 생성"})
+    @swagger_auto_schema(request_body=EvaluationSerializer, responses={201: "{'detail': 'Evaluation 생성' }"})
     def post(self, request, sutra_id):
         sutra = self.get_object_sutra(sutra_id)
 
@@ -98,7 +98,8 @@ class EvaluationView(APIView):
         return Response({
             "detail": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
-
+    
+    @swagger_auto_schema(responses={201: "{'detail': 'Evaluation 삭제' }"})
     def delete(self, request, sutra_id):
         evaluation = self.get_object_evaluation(request.user, sutra_id)
         evaluation.delete()
