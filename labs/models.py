@@ -105,6 +105,9 @@ class Sutra(models.Model):
     description = models.TextField(blank=True, null=True)
     likes = GenericRelation(Like)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     purple_recommends_count = models.IntegerField(
         default=0, help_text="보라두리의 추천수")
     purple_unrecommends_count = models.IntegerField(
