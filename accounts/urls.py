@@ -4,7 +4,9 @@ from rest_framework.routers import DefaultRouter
 
 app_name = 'accounts'
 
-router = DefaultRouter()
+# accounts/social/kakao-login-callback로만 요청해야함.
+# accounts/social/kakao-login-callback/ 로 요청하면 에러 발생함.
+router = DefaultRouter(trailing_slash=False)
 router.register(r'', UserSocialViewSet)
 
 urlpatterns = [

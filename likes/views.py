@@ -37,7 +37,7 @@ class LikeViewSet(viewsets.ModelViewSet):
         """
         data = {'model': request.data.get('model'),
                 'object_id': int(request.data.get('object_id')),
-                'user': int(request.data.get('user'))}
+                'user': self.request.user.id}
         model = data.pop('model')
         try:
             ct = ContentType.objects.get(model=model)

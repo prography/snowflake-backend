@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import mark_safe
 
-from .models import WelcomeCard
+from .models import WelcomeCard, DesignType
 
 
 @admin.register(WelcomeCard)
@@ -20,3 +20,8 @@ class WelcomeCardAdmin(admin.ModelAdmin):
     # fields = [field.name for field in WelcomeCard._meta.fields if field.name != "id"]
 
     list_display = ("title", "status", 'category', 'col')
+
+
+@admin.register(DesignType)
+class DesignTypeAdmin(admin.ModelAdmin):
+    pass

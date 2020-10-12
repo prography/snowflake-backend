@@ -8,6 +8,8 @@
 
 .idea/
 venv/
+#minsung's env
+myvenv/
 env/
 docker
 ### Django ###

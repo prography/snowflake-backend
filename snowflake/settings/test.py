@@ -1,8 +1,7 @@
-import pymysql
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .base import *
+from .local import *
 
 DEBUG = False
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -47,5 +46,5 @@ sentry_sdk.init(
     send_default_pii=True,
     attach_stacktrace=True,
     before_send=sentry_before_send,
-    environment='production'
+    environment='test'
 )
