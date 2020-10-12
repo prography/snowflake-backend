@@ -15,7 +15,8 @@ class UserAdmin(AuthUserAdmin):
 
     fieldsets = (
         (None, {"fields": ("email", "username", "password", "social")}),
-        ("Profile", {"fields": ("birth_year", "image", "image_tag")}),
+        ("Profile", {"fields": ("birth_year",
+                                "image", "image_tag", "position")}),
         ("Gender", {"fields": ("gender", "partner_gender")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
         ("Icon", {"fields": ("icon", "color")})

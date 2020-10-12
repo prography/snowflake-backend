@@ -7,7 +7,8 @@ from accounts.models import User, Icon
 
 # Serializers define the API representation.
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=100, write_only=True, style={"input_type": "password"})
+    password = serializers.CharField(max_length=100, write_only=True, style={
+                                     "input_type": "password"})
 
     class Meta:
         model = User
@@ -24,6 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "color",
             "icon",
+            "position",
         ]
         depth = 1  # You need only add this sentence.
         extra_kwargs = {"date_joined": {"read_only": True}}

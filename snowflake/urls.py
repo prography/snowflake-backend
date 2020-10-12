@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url
+from django.conf import settings
 from django.urls import path, include
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -45,9 +46,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # swagger
-    url(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
-    url(r"^swagger/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    url(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    url(r"^swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0), name="schema-json"),
+    url(r"^swagger/$", schema_view.with_ui("swagger",
+                                           cache_timeout=0), name="schema-swagger-ui"),
+    url(r"^redoc/$", schema_view.with_ui("redoc",
+                                         cache_timeout=0), name="schema-redoc"),
     # admin
     path("admin/", admin.site.urls),
     # JWT v2: simple jwt token
@@ -59,6 +63,13 @@ urlpatterns = [
     path("products/", include("products.urls")),
     path("reviews/", include("reviews.urls")),
     path("likes/", include("likes.urls")),
+    path("labs/", include("labs.urls")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.1.2"
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]

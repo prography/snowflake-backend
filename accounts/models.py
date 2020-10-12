@@ -64,7 +64,7 @@ class User(AbstractUser):
     partner_gender = models.CharField(
         max_length=20, choices=GENDER_CHOICES, default="NONE")
     position = models.CharField(
-        max_length=20, choices=POSITION_CHOICES)
+        max_length=20, choices=POSITION_CHOICES, default="NONE")
     birth_year = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
