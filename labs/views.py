@@ -11,7 +11,12 @@ from .serializers.evaluation import EvaluationSerializer
 from .models import Sutra, Evaluation
 
 
+
 class SutraListView(generics.ListAPIView):
+    """
+    order => default: 최신순 | 평가개수순: evaluation | 추천순: recommend | 비추천순: unrecommend | 안해봤어요 순: notyet | 찜순: like
+    filter => 추천: recommend | 비추천: unrecommend | 안해봤어요: notyet | 찜: like
+    """
     permission_classes = [AllowAny]
     serializer_class = SutraListSerializer
 
@@ -69,6 +74,14 @@ class SutraListView(generics.ListAPIView):
 
         return queryset
 
+    order_param = openapi.Parameter(
+        'order', openapi.IN_QUERY, description="evaluation | recommend | unrecommend | notyet | like", type=openapi.TYPE_STRING)
+    filter_param = openapi.Parameter(
+        'filter', openapi.IN_QUERY, description="recommend | unrecommend | notyet | like", type=openapi.TYPE_STRING)
+    @swagger_auto_schema(manual_parameters=[order_param, filter_param])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class EvaluationView(APIView):
     serializer_class = EvaluationSerializer
@@ -81,7 +94,6 @@ class EvaluationView(APIView):
     def get_object_sutra(self, sutra_id):
         sutra = get_object_or_404(Sutra, id=sutra_id)
         return sutra
-
 
     @swagger_auto_schema(request_body=EvaluationSerializer, responses={201: "{'detail': 'Evaluation 생성' }"})
     def post(self, request, sutra_id):
@@ -98,7 +110,7 @@ class EvaluationView(APIView):
         return Response({
             "detail": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
-    
+
     @swagger_auto_schema(responses={201: "{'detail': 'Evaluation 삭제' }"})
     def delete(self, request, sutra_id):
         evaluation = self.get_object_evaluation(request.user, sutra_id)
