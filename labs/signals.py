@@ -3,18 +3,33 @@ from django.dispatch import receiver
 from .models import Sutra, Evaluation
 
 
-def change_sutra_count(evaluation, sutra, NUM):
+def increase_sutra_recommend(evaluation, sutra):
     if evaluation.user_type == "PURPLE":
         if evaluation.recommend_type == "RECOMMEND":
-            sutra.purple_recommends_count += NUM
+            sutra.purple_recommends_count += 1
         elif evaluation.recommend_type == "UNRECOMMEND":
-            sutra.purple_unrecommends_count += NUM
+            sutra.purple_unrecommends_count += 1
 
     elif evaluation.user_type == "SKY":
         if evaluation.recommend_type == "RECOMMEND":
-            sutra.sky_recommends_count += NUM
+            sutra.sky_recommends_count += 1
         elif evaluation.recommend_type == "UNRECOMMEND":
-            sutra.sky_unrecommends_count += NUM
+            sutra.sky_unrecommends_count += 1
+    sutra.save()
+
+
+def decrease_sutra_recommend(evaluation, sutra):
+    if evaluation.user_type == "PURPLE":
+        if evaluation.recommend_type == "RECOMMEND":
+            sutra.purple_recommends_count += -1
+        elif evaluation.recommend_type == "UNRECOMMEND":
+            sutra.purple_unrecommends_count += -1
+
+    elif evaluation.user_type == "SKY":
+        if evaluation.recommend_type == "RECOMMEND":
+            sutra.sky_recommends_count += -1
+        elif evaluation.recommend_type == "UNRECOMMEND":
+            sutra.sky_unrecommends_count += -1
     sutra.save()
 
 
@@ -22,11 +37,11 @@ def change_sutra_count(evaluation, sutra, NUM):
 def evaluation_post_save(sender, **kwargs):
     evaluation = kwargs['instance']
     sutra = evaluation.sutra
-    change_sutra_count(evaluation, sutra, 1)
+    increase_sutra_recommend(evaluation, sutra)
 
 
 @receiver(post_delete, sender=Evaluation)
 def evaluation_post_delete(sender, **kwargs):
     evaluation = kwargs['instance']
     sutra = evaluation.sutra
-    change_sutra_count(evaluation, sutra, -1)
+    decrease_sutra_recommend(evaluation, sutra)
