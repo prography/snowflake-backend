@@ -1,8 +1,13 @@
-from rest_framework import serializers
-from django.db.models import Count
 import random
-from ..models import Sutra, SutraComment, Evaluation
+
+from django.db.models import Count
+from drf_yasg import openapi
+from rest_framework import serializers
+
 from accounts.serializers.accounts import UserSerializer
+
+from ..models import Evaluation, Sutra, SutraComment
+
 
 class SutraListSerializer(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
@@ -55,7 +60,7 @@ class SutraListSerializer(serializers.ModelSerializer):
             "recommend_data"
         ]
 
-class SutraNewCardtSerializer(serializers.ModelSerializer):
+class SutraNewCardSerializer(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
 
     def get_comment(self, obj):
@@ -76,7 +81,6 @@ class SutraNewCardtSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sutra
-
         fields = [
             'id',
             'name_kor',
