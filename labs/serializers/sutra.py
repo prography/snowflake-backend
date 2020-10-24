@@ -1,6 +1,7 @@
-from rest_framework import serializers
-from django.db.models import Count
 import random
+
+from rest_framework import serializers
+
 from ..models import Sutra, SutraComment, Evaluation
 
 

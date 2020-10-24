@@ -1,15 +1,20 @@
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import F
 from django.shortcuts import get_object_or_404
-from django.db.models import F, Count
-from rest_framework import generics, status
-from rest_framework.views import APIView
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .serializers.sutra import SutraListSerializer
-from .serializers.evaluation import EvaluationSerializer
-from .models import Sutra, Evaluation
+from rest_framework.views import APIView
 
+from likes.serializers.like import LikeSerializer
+from snowflake.permission import AnonCreateAndUpdateOwnerOnly
+from .models import Sutra, Evaluation, SutraComment
+from .serializers.comment import SutraCommentSerializer, SutraCommentListSerializer
+from .serializers.evaluation import EvaluationSerializer
+from .serializers.sutra import SutraListSerializer
 
 
 class SutraListView(generics.ListAPIView):
@@ -118,3 +123,40 @@ class EvaluationView(APIView):
         return Response({
             "detail": "Evaluation 삭제"
         }, status=status.HTTP_204_NO_CONTENT)
+
+
+class SutraCommentViewSet(viewsets.ModelViewSet):
+    """
+    수트라 댓글
+
+    get 제외 토큰 필수!!
+    put은 사용하지 않는다. patch로만 업데이트!
+
+    list 정렬은 기본이 최신순. url parameter로 `order=likes_count` 를 해주면 좋아요 순으로 정렬된다.
+    """
+    permission_classes = [AnonCreateAndUpdateOwnerOnly]
+
+    def get_serializer_class(self):
+        if self.action == "list" or self.action == "retrieve":
+            return SutraCommentListSerializer
+        return SutraCommentSerializer
+
+    def get_queryset(self):
+        sutra_id = self.kwargs.get('sutra_id')
+        order = self.request.query_params.get("order")
+        if order is None:
+            queryset = SutraComment.objects.filter(sutra__id=sutra_id).order_by('-created_at')
+        else:
+            # order = likes_count
+            queryset = SutraComment.objects.filter(sutra__id=sutra_id).order_by(f'-{order}')
+        return queryset
+
+    def create(self, request, sutra_id=None, *args, **kwargs):
+        request.data._mutable = True
+        request.data['sutra'] = sutra_id
+        request.data['user_position'] = request.user.position
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
