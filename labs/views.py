@@ -1,15 +1,17 @@
+import random
+
+from django.db.models import Count, F
 from django.shortcuts import get_object_or_404
-from django.db.models import F, Count
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
-from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .serializers.sutra import SutraListSerializer
-from .serializers.evaluation import EvaluationSerializer
-from .models import Sutra, Evaluation
+from rest_framework.views import APIView
 
+from .models import Evaluation, Sutra, SutraComment
+from .serializers.evaluation import EvaluationSerializer
+from .serializers.sutra import SutraListSerializer, SutraNewCardSerializer
 
 
 class SutraListView(generics.ListAPIView):
@@ -82,6 +84,20 @@ class SutraListView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+
+class SutraNewCardView(APIView):
+    """
+    가장 최근에 생성된 Sutra를 가져옵니다.
+    그것의 댓글이 있으면 랜덤으로 댓글을 가져옵니다.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = SutraNewCardSerializer
+
+    @swagger_auto_schema(responses={200: SutraNewCardSerializer})
+    def get(self, request, formant=None):
+        latest_sutra = Sutra.objects.order_by('-created_at')[0]
+        serializer = self.serializer_class(latest_sutra)
+        return Response(serializer.data)
 
 class EvaluationView(APIView):
     serializer_class = EvaluationSerializer
