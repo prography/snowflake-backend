@@ -3,12 +3,13 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status, viewsets, mixins
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from likes.models import Like
 from likes.serializers.like import LikeSerializer
 from snowflake.permission import AnonCreateAndUpdateOwnerOnly
 from .models import Sutra, Evaluation, SutraComment
@@ -160,3 +161,29 @@ class SutraCommentViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Like.objects.all()
+
+    def create(self, request, comment_id=None, *args, **kwargs):
+        data = {'object_id': comment_id, 'user': self.request.user.id}
+        try:
+            content_type = ContentType.objects.get(model='sutracomment')
+        except ValueError:
+            return Response("content_type 이름이 잘못되었습니다.", status=status.HTTP_400_BAD_REQUEST)
+        data['content_type'] = content_type.id
+
+        serializer = LikeSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            SutraComment.objects.filter(pk=comment_id).update(likes_count=F('likes_count')+1)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, comment_id=None, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        SutraComment.objects.filter(pk=comment_id).update(likes_count=F('likes_count')-1)
+        return Response(data={'message': '삭제 완료!'}, status=status.HTTP_204_NO_CONTENT)
