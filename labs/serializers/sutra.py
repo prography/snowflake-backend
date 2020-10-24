@@ -4,8 +4,6 @@ from django.db.models import Count
 from drf_yasg import openapi
 from rest_framework import serializers
 
-from accounts.serializers.accounts import UserSerializer
-
 from ..models import Evaluation, Sutra, SutraComment
 
 
