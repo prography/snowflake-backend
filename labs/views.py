@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Evaluation, Sutra, SutraComment
 from .serializers.evaluation import EvaluationSerializer
-from .serializers.sutra import SutraListSerializer, SutraNewCardtSerializer
+from .serializers.sutra import SutraListSerializer, SutraNewCardSerializer
 
 
 class SutraListView(generics.ListAPIView):
@@ -86,11 +86,17 @@ class SutraListView(generics.ListAPIView):
 
 
 class SutraNewCardView(APIView):
+    """
+    가장 최근에 생성된 Sutra를 가져옵니다.
+    그것의 댓글이 있으면 랜덤으로 댓글을 가져옵니다.
+    """
     permission_classes = [AllowAny]
+    serializer_class = SutraNewCardSerializer
 
+    @swagger_auto_schema(responses={200: SutraNewCardSerializer})
     def get(self, request, formant=None):
         latest_sutra = Sutra.objects.order_by('-created_at')[0]
-        serializer = SutraNewCardtSerializer(latest_sutra)
+        serializer = self.serializer_class(latest_sutra)
         return Response(serializer.data)
 
 class EvaluationView(APIView):
