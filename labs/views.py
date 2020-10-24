@@ -168,6 +168,7 @@ class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     눈송스트라 댓글 좋아요
 
     token 필수!!
+    form 필요 없이 api 요청만 해주면 됨
     """
     permission_classes = [IsAuthenticated]
     queryset = Like.objects.all()
@@ -175,10 +176,7 @@ class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     @swagger_auto_schema(request_body=LikeSerializer, responses={201: LikeSerializer})
     def create(self, request, comment_id=None, *args, **kwargs):
         data = {'object_id': comment_id, 'user': self.request.user.id}
-        try:
-            content_type = ContentType.objects.get(model='sutracomment')
-        except ValueError:
-            return Response("content_type 이름이 잘못되었습니다.", status=status.HTTP_400_BAD_REQUEST)
+        content_type = ContentType.objects.get(model='sutracomment')
         data['content_type'] = content_type.id
 
         serializer = LikeSerializer(data=data)
