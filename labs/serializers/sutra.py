@@ -33,10 +33,15 @@ class SutraListSerializer(serializers.ModelSerializer):
         recommends_count = obj.purple_recommends_count + obj.sky_recommends_count
         unrecommends_count = obj.purple_unrecommends_count + obj.sky_unrecommends_count
 
-        percentage = (recommends_count /
-                        (recommends_count + unrecommends_count)) * 100
-        purple_count = obj.purple_recommends_count
-        sky_count = obj.sky_recommends_count
+        if recommends_count + unrecommends_count == 0:
+            percentage = 0
+            purple_count = 0
+            sky_count = 0
+        else:
+            percentage = (recommends_count /
+                            (recommends_count + unrecommends_count)) * 100
+            purple_count = obj.purple_recommends_count
+            sky_count = obj.sky_recommends_count
 
         return {
             "percentage": percentage,
