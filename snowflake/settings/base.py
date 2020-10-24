@@ -40,6 +40,7 @@ LOCAL_APPS = [
     "home",
     "likes",
     "labs",
+    'reports',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
