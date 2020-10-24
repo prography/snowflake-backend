@@ -117,7 +117,7 @@ class EvaluationView(APIView):
             "detail": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    @swagger_auto_schema(responses={201: "{'detail': 'Evaluation 삭제' }"})
+    @swagger_auto_schema(responses={204: "{'detail': 'Evaluation 삭제' }"})
     def delete(self, request, sutra_id):
         evaluation = self.get_object_evaluation(request.user, sutra_id)
         evaluation.delete()
@@ -128,7 +128,7 @@ class EvaluationView(APIView):
 
 class SutraCommentViewSet(viewsets.ModelViewSet):
     """
-    수트라 댓글
+    눈송수트라 댓글
 
     get 제외 토큰 필수!!
     put은 사용하지 않는다. patch로만 업데이트!
@@ -164,9 +164,15 @@ class SutraCommentViewSet(viewsets.ModelViewSet):
 
 
 class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """
+    눈송스트라 댓글 좋아요
+
+    token 필수!!
+    """
     permission_classes = [IsAuthenticated]
     queryset = Like.objects.all()
 
+    @swagger_auto_schema(request_body=LikeSerializer, responses={201: LikeSerializer})
     def create(self, request, comment_id=None, *args, **kwargs):
         data = {'object_id': comment_id, 'user': self.request.user.id}
         try:
@@ -182,6 +188,7 @@ class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(responses={204: "{'message': '삭제 완료!' }"})
     def destroy(self, request, comment_id=None, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
