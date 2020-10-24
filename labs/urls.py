@@ -13,6 +13,6 @@ urlpatterns = [
 
     # url name의 문제로 수정
     path('sutras/', SutraListView.as_view(), name='sutra'),
-    path('sutras/<int:sutra_id>/evaluation/',
-         EvaluationView.as_view(), name='sutra'),
+    path('sutras/<int:sutra_id>/evaluations/',
+         EvaluationView.as_view(), name='evaluation'),
 ]
