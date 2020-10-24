@@ -11,8 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Evaluation, Sutra, SutraComment
 from .serializers.evaluation import EvaluationSerializer
-from .serializers.sutra import (SutraCommentSerializer, SutraListSerializer,
-                                SutraSerializer)
+from .serializers.sutra import SutraListSerializer, SutraNewCardtSerializer
 
 
 class SutraListView(generics.ListAPIView):
@@ -89,23 +88,10 @@ class SutraListView(generics.ListAPIView):
 class SutraNewCardView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, formant=None):
         latest_sutra = Sutra.objects.order_by('-created_at')[0]
-        latest_sutra_data = SutraSerializer(latest_sutra).data
-
-        data = {
-            "sutra": latest_sutra_data,
-            "comment": None
-        }
-
-        comment = SutraComment.objects.filter(sutra=latest_sutra)
-        if comment:
-            random_comment = comment[random.randint(0, comment.count()-1)]        
-            random_comment_data = SutraCommentSerializer(random_comment).data
-            
-            data['comment'] = random_comment_data
-
-        return Response(data)
+        serializer = SutraNewCardtSerializer(latest_sutra)
+        return Response(serializer.data)
 
 class EvaluationView(APIView):
     serializer_class = EvaluationSerializer
