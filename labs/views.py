@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .serializers.sutra import SutraListSerializer
+from .serializers.sutra import SutraListSerializer, SutraDetailSerializer
 from .serializers.evaluation import EvaluationSerializer
 from .models import Sutra, Evaluation
 from rest_framework.exceptions import ValidationError
@@ -87,6 +87,17 @@ class SutraListView(generics.ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
+class SutraDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SutraDetailSerializer
+    queryset = Sutra.objects.all()
+
+    
+
+
+
+
+
 class EvaluationView(APIView):
     serializer_class = EvaluationSerializer
 
@@ -122,3 +133,5 @@ class EvaluationView(APIView):
         return Response({
             "detail": "Evaluation 삭제"
         }, status=status.HTTP_204_NO_CONTENT)
+
+
