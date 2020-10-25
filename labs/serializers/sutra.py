@@ -2,13 +2,17 @@ from rest_framework import serializers
 from django.db.models import Count
 import random
 from ..models import Sutra, SutraComment, Evaluation
+from likes.models import Like
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_serializer_method
 
 
 class SutraListSerializer(serializers.ModelSerializer):
     comment = serializers.SerializerMethodField()
     recommend_data = serializers.SerializerMethodField()
+    like = serializers.SerializerMethodField()
 
-    def get_comment(self, obj):
+    def get_comment(self, obj)->dict:
         comment_count = obj.sutracomment_set.count()
         if comment_count == 0:
             return None
@@ -24,7 +28,7 @@ class SutraListSerializer(serializers.ModelSerializer):
             "content": comment["content"]
         }
 
-    def get_recommend_data(self, obj):
+    def get_recommend_data(self, obj)->dict:
         user = self.context['request'].user
         try:
             evaluation = Evaluation.objects.get(user=user, sutra=obj)
@@ -49,6 +53,21 @@ class SutraListSerializer(serializers.ModelSerializer):
             "sky_count": sky_count
         }
 
+    def get_like(self, obj) -> bool:
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+
+        try:
+            Like.objects.get(
+                user=user,
+                object_id=obj.id,
+                content_type=19
+            )
+        except Like.DoesNotExist:
+            return False
+        return True
+
     class Meta:
         model = Sutra
 
@@ -57,5 +76,6 @@ class SutraListSerializer(serializers.ModelSerializer):
             "name_kor",
             "thumbnail",
             "comment",
-            "recommend_data"
+            "recommend_data",
+            "like"
         ]
