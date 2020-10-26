@@ -13,22 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.conf.urls import url
 from django.conf import settings
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.contrib import admin
 from django.urls import path, include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-
-from django.conf import settings
-from django.conf.urls.static import static
-
-from reviews.views import UpdateCondomScore
 
 # Swagger part
 schema_view = get_schema_view(
@@ -64,6 +60,7 @@ urlpatterns = [
     path("reviews/", include("reviews.urls")),
     path("likes/", include("likes.urls")),
     path("labs/", include("labs.urls")),
+    path("reports/", include('reports.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "눈송이 v1.1.2"
