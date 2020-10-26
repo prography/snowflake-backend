@@ -42,6 +42,6 @@ class ReportViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.
 
     @swagger_auto_schema(responses={204: "{'message': '삭제 완료!' }"})
     def destroy(self, request, comment_id=None, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(data={'message': '삭제 완료!'}, status=status.HTTP_204_NO_CONTENT)
+        response = super()
+        response.data = {'message': '삭제 완료!'}
+        return response
