@@ -11,7 +11,7 @@ class Report(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     user = models.ForeignKey(
-        get_user_model, verbose_name="신고자", on_delete=models.CASCADE, related_name="report"
+        get_user_model(), verbose_name="신고자", on_delete=models.CASCADE, related_name="report"
     )
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 시간")
