@@ -1,17 +1,17 @@
 import random
-
 from django.db.models import Count, F
 from django.shortcuts import get_object_or_404
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .models import Evaluation, Sutra, SutraComment
+from rest_framework.exceptions import ValidationError
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .serializers.sutra import SutraListSerializer, SutraDetailSerializer, SutraNewCardSerializer
 from .serializers.evaluation import EvaluationSerializer
-from .serializers.sutra import SutraListSerializer, SutraNewCardSerializer
+from .models import Sutra, Evaluation, SutraComment
+from snowflake.exception import MissingJWTException
 
 
 class SutraListView(generics.ListAPIView):
@@ -27,6 +27,8 @@ class SutraListView(generics.ListAPIView):
         filtering = self.request.query_params.get("filter", None)
         # ordering : 최신순, 평가개수순, 추천순, 비추천순, 안해봤어요 순, 찜순
         ordering = self.request.query_params.get("order", None)
+        if filtering and self.request.user.is_anonymous:
+            raise MissingJWTException
 
         queryset = Sutra.objects.all()
 
@@ -80,9 +82,16 @@ class SutraListView(generics.ListAPIView):
         'order', openapi.IN_QUERY, description="evaluation | recommend | unrecommend | notyet | like", type=openapi.TYPE_STRING)
     filter_param = openapi.Parameter(
         'filter', openapi.IN_QUERY, description="recommend | unrecommend | notyet | like", type=openapi.TYPE_STRING)
+
     @swagger_auto_schema(manual_parameters=[order_param, filter_param])
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class SutraDetailView(generics.RetrieveAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SutraDetailSerializer
+    queryset = Sutra.objects.all()
 
 
 class SutraNewCardView(APIView):
@@ -98,6 +107,7 @@ class SutraNewCardView(APIView):
         latest_sutra = Sutra.objects.order_by('-created_at')[0]
         serializer = self.serializer_class(latest_sutra)
         return Response(serializer.data)
+
 
 class EvaluationView(APIView):
     serializer_class = EvaluationSerializer
