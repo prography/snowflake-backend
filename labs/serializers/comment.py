@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from accounts.models import User
+from django.contrib.auth import get_user_model
 from labs.models import SutraComment
 
 
@@ -18,7 +19,7 @@ comment_fields = [
 
 class SutraCommentUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = get_user_model
         fields = [
             "id",
             "username",
@@ -43,7 +44,6 @@ class SutraCommentListSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class SutraCommentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -53,4 +53,3 @@ class SutraCommentSerializer(serializers.ModelSerializer):
             "user",
             "content",
         ]
-
