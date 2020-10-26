@@ -19,7 +19,7 @@ comment_fields = [
 
 class SutraCommentUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model
+        model = get_user_model()
         fields = [
             "id",
             "username",
