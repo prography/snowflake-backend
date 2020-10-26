@@ -1,7 +1,7 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import SutraListView,SutraDetailView, EvaluationView
+from .views import SutraListView, SutraDetailView, EvaluationView, SutraNewCardView
 
 app_name = 'labs'
 
@@ -16,4 +16,5 @@ urlpatterns = [
     path('sutras/<int:pk>/', SutraDetailView.as_view(), name='sutra-detail'),
     path('sutras/<int:sutra_id>/evaluations/',
          EvaluationView.as_view(), name='evaluation'),
+    path('sutra/new-card/', SutraNewCardView.as_view(), name='sutra')
 ]

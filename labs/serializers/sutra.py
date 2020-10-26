@@ -1,10 +1,10 @@
-from rest_framework import serializers
-from django.db.models import Count
 import random
-from ..models import Sutra, SutraComment, Evaluation
-from likes.models import Like
+from rest_framework import serializers
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_serializer_method
+from drf_yasg import openapi
+from likes.models import Like
+from ..models import Evaluation, Sutra, SutraComment
 
 
 def calculate_percentage(recommends_count, unrecommends_count):
@@ -156,16 +156,30 @@ class SutraDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-# 1. 이미지
-# 2. 체위 한글 이름
-# 3. 체위 영어 이름
-# 4. 체위 설명
-# 5. user가 찜했는지 / user가 찜할 수 있게
-# 6. 추천도 & 추천 수 & 비추천 수
-# 7. 보라두리의 추천도 & 추천 수
-# 8. 하늘이의 추천도 & 추천 수
-# 9. 안 해봤어요 비율 & 안 해봤어요 수
-# 10. 찜콩 비율 & 찜 수
+class SutraNewCardSerializer(serializers.ModelSerializer):
+    comment = serializers.SerializerMethodField()
 
-# 11. user가 추천/비추했는지 / user가 추천, 비추할 수 있게
-# 12. user가 안 해봤는지 / user가 안 해봤어요 누를 수 있게
+    def get_comment(self, obj):
+        comment_count = obj.sutracomment_set.count()
+        if comment_count == 0:
+            return None
+        random_idx = random.randint(0, comment_count-1)
+
+        comment = SutraComment.objects \
+            .select_related('user') \
+            .values('user__username', 'content') \
+            .filter(sutra=obj)[random_idx]
+
+        return {
+            "username": comment["user__username"],
+            "content": comment["content"]
+        }
+
+    class Meta:
+        model = Sutra
+        fields = [
+            'id',
+            'name_kor',
+            'thumbnail',
+            'comment'
+        ]
