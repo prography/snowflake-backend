@@ -15,7 +15,7 @@ class LikeView(APIView):
     """
     좋아요
 
-    여러 모델에 대한 범용적인 좋아요 기능
+    여러 모델에 대한 범용적인 좋아요 기능 
     """
     permission_classes = [IsAuthenticated]
 
