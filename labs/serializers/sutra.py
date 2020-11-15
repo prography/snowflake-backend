@@ -89,20 +89,20 @@ class SutraDetailSerializer(serializers.ModelSerializer):
     is_user_like = serializers.SerializerMethodField()
     recommend_data = serializers.SerializerMethodField()
 
-    def get_is_user_like(self, obj) -> bool:
+    def get_is_user_like(self, obj) -> int:
         user = self.context['request'].user
         if user.is_anonymous:
-            return False
+            return -1
 
         try:
-            Like.objects.get(
+            like = Like.objects.get(
                 user=user,
                 object_id=obj.id,
                 content_type=19
             )
         except Like.DoesNotExist:
-            return False
-        return True
+            return -1
+        return like.id
 
     def get_recommend_data(self, obj)->dict:
         user = self.context['request'].user
