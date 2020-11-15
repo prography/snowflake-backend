@@ -21,7 +21,7 @@ class SutraListSerializer(serializers.ModelSerializer):
     recommend_data = serializers.SerializerMethodField()
     is_user_like = serializers.SerializerMethodField()
 
-    def get_comment(self, obj)->dict:
+    def get_comment(self, obj) -> dict:
         comment_count = obj.sutracomment_set.count()
         if comment_count == 0:
             return None
@@ -37,7 +37,7 @@ class SutraListSerializer(serializers.ModelSerializer):
             "content": comment["content"]
         }
 
-    def get_recommend_data(self, obj)->dict:
+    def get_recommend_data(self, obj) -> dict:
         user = self.context['request'].user
         try:
             evaluation = Evaluation.objects.get(user=user, sutra=obj)
@@ -88,22 +88,22 @@ class SutraDetailSerializer(serializers.ModelSerializer):
     is_user_like = serializers.SerializerMethodField()
     recommend_data = serializers.SerializerMethodField()
 
-    def get_is_user_like(self, obj) -> int:
+    def get_is_user_like(self, obj) -> bool:
         user = self.context['request'].user
         if user.is_anonymous:
-            return -1
+            return False
 
         try:
-            like = Like.objects.get(
+            Like.objects.get(
                 user=user,
                 object_id=obj.id,
                 content_type=19
             )
         except Like.DoesNotExist:
-            return -1
-        return like.id
+            return False
+        return True
 
-    def get_recommend_data(self, obj)->dict:
+    def get_recommend_data(self, obj) -> dict:
         user = self.context['request'].user
         try:
             evaluation = Evaluation.objects.get(user=user, sutra=obj)
