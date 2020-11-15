@@ -13,8 +13,6 @@ from likes.models import Like
 from likes.serializers.like import LikeSerializer, LikeWithProductDetailSerializer
 
 
-
-
 class LikeView(APIView):
     """
     좋아요
@@ -66,12 +64,14 @@ class LikeView(APIView):
         except ContentType.DoesNotExist:
             return Response({"message": "model 이름이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        like = Like.objects.get(
-            object_id=object_id,
-            user=user,
-            content_type=ct
-        )
-
-        like.delete()
+        try:
+            like = Like.objects.get(
+                object_id=object_id,
+                user=user,
+                content_type=ct
+            )
+            like.delete()
+        except Like.DoesNotExist:
+            return Response({"message": "해당 좋아요가 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "like를 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
