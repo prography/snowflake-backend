@@ -44,37 +44,27 @@ def create_image_path(instance, filename):
 
 
 class User(AbstractUser):
-    SOCIAL_CHOICES = (("KAKAO", "kakao"), ("NAVER", "naver"),
-                      ("APPLE", "apple"), ("NONE", "none"))
-    GENDER_CHOICES = (("MAN", "남"), ("WOMAN", "여"),
-                      ("BOTH", "모두"), ("SECRET", "비공개"), ("NONE", "none"))
-    POSITION_CHOICES = (
-        ("PURPLE", "보라두리"), ("SKY", "하늘이"), ("NONE", "선택안함"))
+    SOCIAL_CHOICES = (("KAKAO", "kakao"), ("NAVER", "naver"), ("APPLE", "apple"), ("NONE", "none"))
+    GENDER_CHOICES = (("MAN", "남"), ("WOMAN", "여"), ("BOTH", "모두"), ("SECRET", "비공개"), ("NONE", "none"))
+    POSITION_CHOICES = (("PURPLE", "보라두리"), ("SKY", "하늘이"), ("NONE", "선택안함"))
 
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(_("email address"), unique=True)
     # Image field
-    image = models.ImageField(
-        upload_to=create_image_path, blank=True, null=True)
+    image = models.ImageField(upload_to=create_image_path, blank=True, null=True)
 
-    social = models.CharField(
-        max_length=20, choices=SOCIAL_CHOICES, null=True, blank=True, default="NONE")
-    gender = models.CharField(
-        max_length=20, choices=GENDER_CHOICES, default="NONE")
-    partner_gender = models.CharField(
-        max_length=20, choices=GENDER_CHOICES, default="NONE")
-    position = models.CharField(
-        max_length=20, choices=POSITION_CHOICES, default="NONE")
+    social = models.CharField(max_length=20, choices=SOCIAL_CHOICES, null=True, blank=True, default="NONE")
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default="NONE")
+    partner_gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default="NONE")
+    position = models.CharField(max_length=20, choices=POSITION_CHOICES, default="NONE")
     birth_year = models.IntegerField(default=0)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
     # icon
-    icon = models.ForeignKey(Icon, verbose_name="icon", related_name="user", on_delete=models.SET_NULL, null=True,
-                             blank=True)
+    icon = models.ForeignKey(Icon, verbose_name="icon", related_name="user", on_delete=models.SET_NULL, null=True, blank=True)
     # RGB value
-    color = models.CharField(max_length=20, null=True,
-                             blank=True, default="FFFFFF")
+    color = models.CharField(max_length=20, null=True, blank=True, default="FFFFFF")
 
     objects = UserManager()
 
