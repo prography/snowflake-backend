@@ -33,6 +33,8 @@ from .serializers.sutra import SutraListSerializer
 
 class SutraListView(generics.ListAPIView):
     """
+    눈송수트라 조회
+
     order => default: 최신순 | 평가개수순: evaluation | 추천순: recommend | 비추천순: unrecommend | 안해봤어요 순: notyet | 찜순: like
     filter => 추천: recommend | 비추천: unrecommend | 안해봤어요: notyet | 찜: like
     """
@@ -106,6 +108,11 @@ class SutraListView(generics.ListAPIView):
 
 
 class SutraDetailView(generics.RetrieveAPIView):
+    """
+    눈송수트라 상세조회
+
+    눈송수트라 상세조회 API
+    """
     permission_classes = [AllowAny]
     serializer_class = SutraDetailSerializer
     queryset = Sutra.objects.all()
@@ -127,6 +134,11 @@ class SutraNewCardView(APIView):
 
 
 class EvaluationView(APIView):
+    """
+    눈송수트라 평가
+
+    눈송수트라 평가 API
+    """
     serializer_class = EvaluationSerializer
 
     def get_object_evaluation(self, user, sutra_id):
