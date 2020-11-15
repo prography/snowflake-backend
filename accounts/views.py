@@ -1,72 +1,80 @@
-import json
-from uuid import uuid4
-
-from django.shortcuts import redirect
-from rest_framework import permissions, status, viewsets, permissions
-from rest_framework.views import APIView
-from rest_framework.decorators import action, api_view, authentication_classes, permission_classes
+from django.contrib.auth import get_user_model
+from drf_yasg.openapi import Schema, TYPE_OBJECT
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from accounts.models import Icon
-from django.contrib.auth import get_user_model
 from accounts.serializers.accounts import CustomUserObtainPairSerializer, UserSerializer
+from accounts.social_login.apple_social_login import AppleSocialLogin
 from accounts.social_login.kakao_social_login import KakaoSocialLogin
 from accounts.social_login.naver_social_login import NaverSocialLogin
-from accounts.social_login.apple_social_login import AppleSocialLogin
+from snowflake.permission import AnonCreateAndUpdateOwnerOnlyWithMethod
 
 User = get_user_model()
 
-class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
-    """
-    Custom permission:
-        - allow anonymous POST
-        - allow authenticated GET and PUT on *own* record
-        - allow all actions for staff
-    """
-
-    def has_permission(self, request, view):
-        return request.method == "POST" or request.user and request.user.is_authenticated
-
-    def has_object_permission(self, request, view, obj):
-        return (
-                request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
-        )
-
 
 class UserAPIView(APIView):
-    permission_classes = [AnonCreateAndUpdateOwnerOnly]
+    permission_classes = [AnonCreateAndUpdateOwnerOnlyWithMethod]
     serializer_class = UserSerializer
 
+    @swagger_auto_schema(responses={201: '{message: 회원가입 완료!}'}, request_body=UserSerializer)
     def post(self, request, *args, **kwargs):
-        permission_classes = [permissions.AllowAny]
+        """
+        사용자 CRUD - 생성
+
+        회원가입
+        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"message": "회원가입 완료!"}, status=status.HTTP_201_CREATED)
 
+    @swagger_auto_schema(responses={200: UserSerializer})
     def get(self, request, format=None):
+        """
+        사용자 CRUD - 조회
+
+        토큰 필수
+        """
         serializer = self.serializer_class(request.user)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=UserSerializer)
     def patch(self, request, format=None):
-        user = User.objects.filter(id=request.user.id).first()
-        serializer = self.serializer_class(user, data=request.data, partial=True)
+        """
+        사용자 CRUD - 수정
+
+        토큰 필수
+
+        icon을 생성하는 경우 id값을 넣어주는데, 제거하고 싶은 경우 0을 넣어서 보낸다.
+        position 같은 경우 PURPLE(보라두리), SKY(하늘이), NONE(선택안함) 을 선택할 수 있다.
+        """
+        serializer = self.serializer_class(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             # icon 업데이트
             icon_id = request.data.get('icon', None)
-            if icon_id is None:
-                user.icon = None
+            if icon_id == "0":
+                request.user.icon = None
             elif Icon.objects.filter(id=icon_id).count() > 0:
-                user.icon_id = icon_id
-            user.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+                request.user.icon_id = icon_id
+                request.user.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(responses={204: "{email}({username})이 비활성화 되었습니다. 재활성화를 위해서는 관리자에게 문의하세요"})
     def delete(self, request):
+        """
+        사용자 CRUD - 삭제
+
+        토큰 필수
+        """
         request.user.is_active = False
         request.user.save()
-        return Response("{}({})이 비활성화 되었습니다. 재활성화를 위해서는 관리자에게 문의하세요".format(request.user.email, request.user.username))
+        return Response(f"{request.user.email}({request.user.username})이 비활성화 되었습니다. 재활성화를 위해서는 관리자에게 문의하세요")
 
 
 class UserSocialViewSet(viewsets.ModelViewSet):
