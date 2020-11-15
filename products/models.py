@@ -3,11 +3,12 @@ from uuid import uuid4
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from model_utils.managers import InheritanceManager
 from django.utils import timezone
+from model_utils.managers import InheritanceManager
 
-from likes.models import Like
 from home.models import DesignType
+from likes.models import Like
+
 
 def create_path(directory, filename):
     ymd_path = timezone.localtime().strftime("%Y-%m-%d-%H%M%S")

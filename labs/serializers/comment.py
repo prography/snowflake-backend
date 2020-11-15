@@ -1,9 +1,7 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from accounts.models import User
-from django.contrib.auth import get_user_model
 from labs.models import SutraComment
-
 
 comment_fields = [
     "id",

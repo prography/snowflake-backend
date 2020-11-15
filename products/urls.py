@@ -1,15 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from products.views import (
-    CondomListView,
-    WelcomeCardListReadView,
-    CondomTopNListView,
-    CondomTrioView,
-    CondomDetailView,
-    SearchView, NumOfLikesUpdateView,
-)
-
+from products.views import (CondomDetailView, CondomListView, CondomTopNListView, CondomTrioView, NumOfLikesUpdateView, SearchView, WelcomeCardListReadView)
 
 app_name = "products"
 

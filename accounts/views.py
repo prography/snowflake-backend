@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from drf_yasg.openapi import Schema, TYPE_OBJECT
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes

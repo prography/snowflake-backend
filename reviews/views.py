@@ -1,19 +1,15 @@
 from django.contrib.contenttypes.models import ContentType
-
-from rest_framework import viewsets, permissions, status
-from rest_framework.exceptions import NotFound, ValidationError
+from django.db.models import Avg
+from rest_framework import permissions, status, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 
-from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
-
-from reviews.models import ReviewCondom, ReviewGel, Review
-from products.models import Condom
 from likes.models import Like
-
-from django.db.models import F, Avg
-
+from products.models import Condom
+from reviews.models import Review, ReviewCondom, ReviewGel
+from reviews.serializers.condom import ReviewCondomListSerializer, ReviewCondomSerializer
 from snowflake.exception import MissingProductIdException
 
 

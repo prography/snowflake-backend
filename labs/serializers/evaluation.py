@@ -1,6 +1,7 @@
-from rest_framework import serializers
-from ..models import Evaluation, Sutra
 from django.db.utils import IntegrityError
+from rest_framework import serializers
+
+from ..models import Evaluation
 
 
 class EvaluationSerializer(serializers.ModelSerializer):

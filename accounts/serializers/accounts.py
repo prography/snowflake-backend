@@ -1,8 +1,7 @@
-from django.conf.urls import include, url
-from rest_framework import routers, serializers, viewsets
+from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from accounts.models import User, Icon
+from accounts.models import User
 
 
 # Serializers define the API representation.

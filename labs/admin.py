@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Sutra, SutraComment, Evaluation
+
+from .models import Evaluation, Sutra, SutraComment
 
 
 @admin.register(Sutra)

@@ -1,8 +1,7 @@
 import random
+
 from rest_framework import serializers
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_serializer_method
-from drf_yasg import openapi
+
 from likes.models import Like
 from ..models import Evaluation, Sutra, SutraComment
 

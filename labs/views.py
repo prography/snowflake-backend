@@ -1,33 +1,21 @@
-import random
-from django.db.models import Count, F
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import F
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.exceptions import ValidationError
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .serializers.sutra import SutraListSerializer, SutraDetailSerializer, SutraNewCardSerializer
-from .serializers.evaluation import EvaluationSerializer
-from .models import Sutra, Evaluation, SutraComment
-from snowflake.exception import MissingJWTException
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, status, viewsets, mixins
-from rest_framework.decorators import action
+from rest_framework import generics, mixins, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from likes.models import Like
 from likes.serializers.like import LikeSerializer
+from snowflake.exception import MissingJWTException
 from snowflake.permission import AnonCreateAndUpdateOwnerOnly
-from .models import Sutra, Evaluation, SutraComment
-from .serializers.comment import SutraCommentSerializer, SutraCommentListSerializer
+from .models import Evaluation, Sutra, SutraComment
+from .serializers.comment import SutraCommentListSerializer, SutraCommentSerializer
 from .serializers.evaluation import EvaluationSerializer
+from .serializers.sutra import SutraDetailSerializer, SutraNewCardSerializer
 from .serializers.sutra import SutraListSerializer
 
 
