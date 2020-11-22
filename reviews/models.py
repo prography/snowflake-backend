@@ -29,7 +29,7 @@ class Review(models.Model):
     objects = InheritanceManager()
 
     likes = GenericRelation(Like)
-    num_of_likes = models.IntegerField(default=0)
+    likes_count = models.IntegerField(default=0)
 
     # def __str__(self):
     #     return self.user
