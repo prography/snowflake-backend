@@ -167,7 +167,7 @@ class SutraCommentViewSet(viewsets.ModelViewSet):
     """
     눈송수트라 댓글
 
-    get 제외 토큰 필수!!
+    토큰 필수! get의 경우 토큰이 없는 경우(로그인 안한 경우)만 토큰 없이 보낼 것
     put은 사용하지 않는다. patch로만 업데이트!
 
     list 정렬은 기본이 최신순. url parameter로 `order=likes_count` 를 해주면 좋아요 순으로 정렬된다.
@@ -199,33 +199,13 @@ class SutraCommentViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
-class SutraCommentLikeViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    """
-    눈송스트라 댓글 좋아요
-
-    token 필수!!
-    form 필요 없이 api 요청만 해주면 됨
-    """
-    permission_classes = [IsAuthenticated]
-    queryset = Like.objects.all()
-
-    @swagger_auto_schema(request_body=LikeSerializer, responses={201: LikeSerializer})
-    def create(self, request, comment_id=None, *args, **kwargs):
-        data = {'object_id': comment_id, 'user': self.request.user.id}
-        content_type = ContentType.objects.get(model='sutracomment')
-        data['content_type'] = content_type.id
-
-        serializer = LikeSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            SutraComment.objects.filter(pk=comment_id).update(likes_count=F('likes_count')+1)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @swagger_auto_schema(responses={204: "{'message': '삭제 완료!' }"})
-    def destroy(self, request, comment_id=None, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        SutraComment.objects.filter(pk=comment_id).update(likes_count=F('likes_count')-1)
-        return Response(data={'message': '삭제 완료!'}, status=status.HTTP_204_NO_CONTENT)
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
