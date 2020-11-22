@@ -18,7 +18,12 @@ class LikeView(APIView):
     """
     좋아요
 
-    여러 모델에 대한 범용적인 좋아요 기능 
+    여러 모델에 대한 범용적인 좋아요 기능
+
+    post, delete 하는 경우 "content_type"이 아닌 "model"로 어떤 모델인지 보내줘야 한다.
+    product | review | sutra | sutracomment 중 선택
+
+    user는 토큰 값으로 받음
     """
     permission_classes = [IsAuthenticated]
 
@@ -61,7 +66,7 @@ class LikeView(APIView):
         model = request.data.get('model')
 
         try:
-            content_type = ContentType.objects.get(model=model)
+            content_type = ContentType.objects.get(model=model).id
         except ContentType.DoesNotExist:
             return Response({"message": "model 이름이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
 

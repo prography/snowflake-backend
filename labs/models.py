@@ -136,7 +136,6 @@ class SutraComment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     likes = GenericRelation(Like)
     likes_count = models.IntegerField(default=0, help_text="찜 수")
-    # TODO: 신고 추가
 
     def __str__(self):
         return self.content[:20]
