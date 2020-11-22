@@ -6,8 +6,6 @@ from products.models import Product
 from reviews.models import Review
 
 
-
-
 @receiver(post_save, sender=Like)
 def like_post_save(sender, **kwargs):
     like = kwargs['instance']
@@ -29,8 +27,6 @@ def like_post_save(sender, **kwargs):
 @receiver(post_delete, sender=Like)
 def like_post_delete(sender, **kwargs):
     like = kwargs['instance']
-    model_name = like.content_type.model
-    object_id = like.object_id
     model_name = like.content_type.model
     object_id = like.object_id
     if model_name == 'sutra':
