@@ -50,4 +50,4 @@ class SutraCommentSerializer(serializers.ModelSerializer):
         fields = [
             "user",
             "content",
-        ]
+        ] + comment_fields
