@@ -36,12 +36,11 @@ class SutraCommentListSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-
         try:
             Like.objects.get(
                 user=user,
                 object_id=obj.id,
-                content_type=ContentType.objects.get(model='sutracomment').id
+                content_type=20
             )
         except Like.DoesNotExist:
             return False

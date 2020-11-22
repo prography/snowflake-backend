@@ -13,10 +13,6 @@ def like_post_save(sender, **kwargs):
         models = Sutra.objects.get(id=object_id)
         models.likes_count += 1
         models.save()
-    elif model_name == 'sutracomment':
-        models = SutraComment.objects.get(id=object_id)
-        models.likes_count += 1
-        models.save()
 
 
 @receiver(post_delete, sender=Like)
@@ -26,9 +22,5 @@ def like_post_delete(sender, **kwargs):
     object_id = like.object_id
     if model_name == 'sutra':
         models = Sutra.objects.get(id=object_id)
-        models.likes_count -= 1
-        models.save()
-    elif model_name == 'sutracomment':
-        models = SutraComment.objects.get(id=object_id)
         models.likes_count -= 1
         models.save()
