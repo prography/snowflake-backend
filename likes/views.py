@@ -3,12 +3,12 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+
 
 from likes.models import Like
 from likes.serializers.like import LikeSerializer, LikeWithProductDetailSerializer
@@ -61,7 +61,7 @@ class LikeView(APIView):
         model = request.data.get('model')
 
         try:
-            ct = ContentType.objects.get(model=model)
+            content_type = ContentType.objects.get(model=model)
         except ContentType.DoesNotExist:
             return Response({"message": "model 이름이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -69,7 +69,7 @@ class LikeView(APIView):
             like = Like.objects.get(
                 object_id=object_id,
                 user=user,
-                content_type=ct
+                content_type=content_type
             )
             like.delete()
         except Like.DoesNotExist:
