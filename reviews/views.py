@@ -145,6 +145,6 @@ class NumOfLikesUpdateView(APIView):
         for review in Review.objects.all():
             content_type = ContentType.objects.get(model='review')
             num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=review.id).count()
-            review.num_of_likes = num_of_likes
+            review.likes_count = num_of_likes
             review.save()
         return Response({"message": "Complete"}, status=status.HTTP_200_OK)

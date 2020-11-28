@@ -75,6 +75,8 @@ class CondomListView(generics.ListAPIView):
             queryset = queryset.order_by("-score")
         else:
             if order in ["num_of_reviews", "avg_oily", "avg_thickness", "avg_durability", "num_of_views", 'num_of_likes']:
+                if order == 'num_of_likes':
+                    order = 'likes_count'
                 queryset = queryset.order_by(f'-{order}')
             else:
                 raise NotFound()
@@ -110,6 +112,6 @@ class NumOfLikesUpdateView(APIView):
         for product in Product.objects.all():
             content_type = ContentType.objects.get(model='review')
             num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=product.id).count()
-            product.num_of_likes = num_of_likes
+            product.likes_count = num_of_likes
             product.save()
         return Response({"message": "Complete"}, status=status.HTTP_200_OK)

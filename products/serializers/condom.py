@@ -16,7 +16,7 @@ condom_fields = [
     "avg_oily",
     "avg_thickness",
     "avg_durability",
-    "num_of_likes",
+    "likes_count",
 ]
 
 
