@@ -11,30 +11,7 @@ from products.models import Condom
 from reviews.models import Review, ReviewCondom, ReviewGel
 from reviews.serializers.condom import ReviewCondomListSerializer, ReviewCondomSerializer
 from snowflake.exception import MissingProductIdException
-
-
-class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
-    """
-    Custom permission:
-        - allow anonymous POST
-        - allow authenticated GET and PUT on *own* record
-        - allow all actions for staff
-    """
-
-    def has_permission(self, request, view):
-        # 익명 유저를 위한 조회
-        return (
-                view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
-        )  # 유저에 의한 수정
-
-    def has_object_permission(self, request, view, obj):
-        if view.action in ["list", "retrieve"]:
-            return True
-        return (
-                view.action in ["create", "update", "partial_update"]
-                and obj.id == request.user.id
-                or request.user.is_staff
-        )
+from snowflake.permission import AnonCreateAndUpdateOwnerOnly
 
 
 class ReviewCondomViewSet(viewsets.ModelViewSet):
