@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Like
-from labs.models import Sutra, SutraComment 
+from labs.models import Sutra, SutraComment
 from products.models import Product
 from reviews.models import Review
 
@@ -12,7 +12,7 @@ def like_post_save(sender, **kwargs):
     model_name = like.content_type.model
     object_id = like.object_id
     if model_name == 'sutra':
-        Model = Sutra 
+        Model = Sutra
     elif model_name == 'product':
         Model = Product
     elif model_name == 'review':
@@ -30,7 +30,7 @@ def like_post_delete(sender, **kwargs):
     model_name = like.content_type.model
     object_id = like.object_id
     if model_name == 'sutra':
-        Model = Sutra 
+        Model = Sutra
     elif model_name == 'product':
         Model = Product
     elif model_name == 'review':
