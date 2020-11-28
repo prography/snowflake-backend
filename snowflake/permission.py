@@ -12,16 +12,18 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         # 익명 유저를 위한 조회
         return (
-                view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
+            view.action in [
+                "list", "retrieve"] or request.user and request.user.is_authenticated
         )  # 유저에 의한 수정
 
     def has_object_permission(self, request, view, obj):
+        breakpoint()
         if view.action in ["list", "retrieve"]:
             return True
         return (
-                view.action in ["create", "update", "partial_update", "destroy"]
-                and obj.user == request.user
-                or request.user.is_staff
+            view.action in ["create", "update", "partial_update", "destroy"]
+            and obj.user == request.user
+            or request.user.is_staff
         )
 
 
@@ -38,5 +40,6 @@ class AnonCreateAndUpdateOwnerOnlyWithMethod(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-                request.method in ["GET", "PUT", "PATCH", "DELETE"] and obj.user == request.user or request.user.is_staff
+            request.method in [
+                "GET", "PUT", "PATCH", "DELETE"] and obj.user == request.user or request.user.is_staff
         )
