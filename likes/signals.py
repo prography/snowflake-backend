@@ -6,20 +6,21 @@ from products.models import Product
 from reviews.models import Review
 
 
+model_dict = {
+    'sutra': Sutra,
+    'product': Product,
+    'review': Review,
+    'sutracomment': SutraComment
+}
+
+
 @receiver(post_save, sender=Like)
 def like_post_save(sender, **kwargs):
     like = kwargs['instance']
     model_name = like.content_type.model
     object_id = like.object_id
-    if model_name == 'sutra':
-        Model = Sutra
-    elif model_name == 'product':
-        Model = Product
-    elif model_name == 'review':
-        Model = Review
-    elif model_name == 'sutracomment':
-        Model = SutraComment
-    obj = Model.objects.get(id=object_id)
+
+    obj = model_dict[model_name].objects.get(id=object_id)
     obj.likes_count += 1
     obj.save()
 
@@ -29,14 +30,7 @@ def like_post_delete(sender, **kwargs):
     like = kwargs['instance']
     model_name = like.content_type.model
     object_id = like.object_id
-    if model_name == 'sutra':
-        Model = Sutra
-    elif model_name == 'product':
-        Model = Product
-    elif model_name == 'review':
-        Model = Review
-    elif model_name == 'sutracomment':
-        Model = SutraComment
-    obj = Model.objects.get(id=object_id)
+
+    obj = model_dict[model_name].objects.get(id=object_id)
     obj.likes_count -= 1
     obj.save()
