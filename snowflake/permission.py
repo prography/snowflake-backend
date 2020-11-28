@@ -20,7 +20,7 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
             return True
         return (
                 view.action in ["create", "update", "partial_update"]
-                and obj.id == request.user.id
+                and obj.user == request.user
                 or request.user.is_staff
         )
 
@@ -38,5 +38,5 @@ class AnonCreateAndUpdateOwnerOnlyWithMethod(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-                request.method in ["GET", "PUT", "PATCH"] and obj.id == request.user.id or request.user.is_staff
+                request.method in ["GET", "PUT", "PATCH"] and obj.user == request.user or request.user.is_staff
         )
