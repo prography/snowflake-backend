@@ -39,6 +39,8 @@ class SutraListSerializer(serializers.ModelSerializer):
 
     def get_recommend_data(self, obj) -> dict:
         user = self.context['request'].user
+        if user.is_anonymous:
+            return None
         try:
             evaluation = Evaluation.objects.get(user=user, sutra=obj)
         except Evaluation.DoesNotExist:
@@ -105,6 +107,8 @@ class SutraDetailSerializer(serializers.ModelSerializer):
 
     def get_recommend_data(self, obj) -> dict:
         user = self.context['request'].user
+        if user.is_anonymous:
+            return None
         try:
             evaluation = Evaluation.objects.get(user=user, sutra=obj)
         except Evaluation.DoesNotExist:
