@@ -17,7 +17,6 @@ class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
         )  # 유저에 의한 수정
 
     def has_object_permission(self, request, view, obj):
-        breakpoint()
         if view.action in ["list", "retrieve"]:
             return True
         return (
