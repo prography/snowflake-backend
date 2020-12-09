@@ -1,44 +1,17 @@
 from django.contrib.contenttypes.models import ContentType
-
-from rest_framework import viewsets, permissions, status
-from rest_framework.exceptions import NotFound, ValidationError
+from django.db.models import Avg
+from rest_framework import permissions, status, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 
-from reviews.serializers.condom import ReviewCondomSerializer, ReviewCondomListSerializer
-
-from reviews.models import ReviewCondom, ReviewGel, Review
-from products.models import Condom
 from likes.models import Like
-
-from django.db.models import F, Avg
-
+from products.models import Condom
+from reviews.models import Review, ReviewCondom, ReviewGel
+from reviews.serializers.condom import ReviewCondomListSerializer, ReviewCondomSerializer
 from snowflake.exception import MissingProductIdException
-
-
-class AnonCreateAndUpdateOwnerOnly(permissions.BasePermission):
-    """
-    Custom permission:
-        - allow anonymous POST
-        - allow authenticated GET and PUT on *own* record
-        - allow all actions for staff
-    """
-
-    def has_permission(self, request, view):
-        # 익명 유저를 위한 조회
-        return (
-                view.action in ["list", "retrieve"] or request.user and request.user.is_authenticated
-        )  # 유저에 의한 수정
-
-    def has_object_permission(self, request, view, obj):
-        if view.action in ["list", "retrieve"]:
-            return True
-        return (
-                view.action in ["create", "update", "partial_update"]
-                and obj.id == request.user.id
-                or request.user.is_staff
-        )
+from snowflake.permission import AnonCreateAndUpdateOwnerOnly
 
 
 class ReviewCondomViewSet(viewsets.ModelViewSet):
@@ -149,6 +122,6 @@ class NumOfLikesUpdateView(APIView):
         for review in Review.objects.all():
             content_type = ContentType.objects.get(model='review')
             num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=review.id).count()
-            review.num_of_likes = num_of_likes
+            review.likes_count = num_of_likes
             review.save()
         return Response({"message": "Complete"}, status=status.HTTP_200_OK)

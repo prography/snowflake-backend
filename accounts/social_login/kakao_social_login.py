@@ -1,5 +1,3 @@
-from datetime import datetime
-from urllib import parse
 from uuid import uuid4
 
 import requests

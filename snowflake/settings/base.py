@@ -40,6 +40,7 @@ LOCAL_APPS = [
     "home",
     "likes",
     "labs",
+    'reports',
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
@@ -127,6 +128,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "SLIDING_TOKEN_LIFETIME": timedelta(days=1),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS" : True
 }
 
 # Social Login

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from reviews.models import Review, ReviewCondom, ReviewGel
 from products.models import Product
+from reviews.models import ReviewCondom, ReviewGel
 
 
 class ProductInline(admin.TabularInline):

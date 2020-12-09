@@ -1,12 +1,10 @@
-import jwt
-from datetime import datetime
 from uuid import uuid4
 
-import requests
-from django.conf import settings
+import jwt
 
 from accounts.models import User
-from snowflake.exception import JWTDecodeError, InvalidEmailError
+from snowflake.exception import InvalidEmailError, JWTDecodeError
+
 
 class AppleSocialLogin():
     social_type = 'APPLE'

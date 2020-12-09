@@ -21,9 +21,9 @@ class DesignType(models.Model):
     def __str__(self):
         return self.title
 
-    # TODO: 대문자로 변환해서 저장
-    # def save():
-    #     대문자로 변환
+    def save(self, *args, **kwargs):
+        self.title = self.title.upper()
+        super(DesignType, self).save(*args, **kwargs)
 
 
 # Create your models here.

@@ -9,12 +9,14 @@ def increase_sutra_recommend(evaluation, sutra):
             sutra.purple_recommends_count += 1
         elif evaluation.recommend_type == "UNRECOMMEND":
             sutra.purple_unrecommends_count += 1
-
     elif evaluation.user_type == "SKY":
         if evaluation.recommend_type == "RECOMMEND":
             sutra.sky_recommends_count += 1
         elif evaluation.recommend_type == "UNRECOMMEND":
             sutra.sky_unrecommends_count += 1
+
+    if evaluation.recommend_type == "NOTYET":
+        sutra.not_yet_count += 1
     sutra.save()
 
 
@@ -30,6 +32,9 @@ def decrease_sutra_recommend(evaluation, sutra):
             sutra.sky_recommends_count += -1
         elif evaluation.recommend_type == "UNRECOMMEND":
             sutra.sky_unrecommends_count += -1
+
+    if evaluation.recommend_type == "NOTYET":
+        sutra.not_yet_count += -1
     sutra.save()
 
 

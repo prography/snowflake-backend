@@ -1,4 +1,3 @@
-from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import UserManager
 from django.utils.translation import ugettext_lazy as _
 

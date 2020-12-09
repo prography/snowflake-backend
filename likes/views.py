@@ -1,49 +1,56 @@
 from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import render
 
-# Create your views here.
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+
+
 from likes.models import Like
 from likes.serializers.like import LikeSerializer, LikeWithProductDetailSerializer
 
 
-class LikeViewSet(viewsets.ModelViewSet):
+class LikeView(APIView):
+    """
+    좋아요
+
+    여러 모델에 대한 범용적인 좋아요 기능
+
+    post, delete 하는 경우 "content_type"이 아닌 "model"로 어떤 모델인지 보내줘야 한다.
+    product | review | sutra | sutracomment 중 선택
+
+    user는 토큰 값으로 받음
+    """
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        is_product_detail = self.request.query_params.get('is_product_detail', None)
+        is_product_detail = self.request.query_params.get(
+            'is_product_detail', None)
         if is_product_detail and is_product_detail.lower() == 'true':
             return LikeWithProductDetailSerializer
         return LikeSerializer
 
-    def get_queryset(self):
-        queryset = Like.objects.filter(user=self.request.user)
-        model = self.request.query_params.get('model', None)
-        if model is not None:
-            ct = ContentType.objects.get(model=model)
-            queryset = queryset.filter(content_type=ct.id)
-        object_id = self.request.query_params.get('object_id', None)
-        if object_id is not None:
-            queryset = queryset.filter(object_id=object_id)
-        return queryset
+    model_param = openapi.Parameter(
+        'model', openapi.IN_QUERY, description="product | review | sutra | sutracomment", type=openapi.TYPE_STRING)
+    object_id_param = openapi.Parameter(
+        'object_id', openapi.IN_QUERY, description="해당 객체의 id", type=openapi.TYPE_INTEGER)
 
-    def create(self, request, *args, **kwargs):
-        """
-        새 좋아요를 만듭니다.
-        """
-        data = {'model': request.data.get('model'),
-                'object_id': int(request.data.get('object_id')),
-                'user': self.request.user.id}
-        model = data.pop('model')
+    @swagger_auto_schema(manual_parameters=[model_param, object_id_param])
+    def post(self, request):
+        data = {
+            'object_id': int(request.data.get('object_id')),
+            'user': request.user.id
+        }
+        model = request.data.get('model')
         try:
             ct = ContentType.objects.get(model=model)
-        # django.contrib.contenttypes.models.ContentType.DoesNotExist:
-        except:
-            return Response("content_type 이름이 잘못되었습니다.", status=status.HTTP_400_BAD_REQUEST)
+        except ContentType.DoesNotExist:
+            return Response({"message": "model 이름이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
         data['content_type'] = ct.id
 
         serializer = LikeSerializer(data=data)
@@ -51,3 +58,26 @@ class LikeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(manual_parameters=[model_param, object_id_param])
+    def delete(self, request):
+        object_id = request.data.get('object_id')
+        user = request.user
+        model = request.data.get('model')
+
+        try:
+            content_type = ContentType.objects.get(model=model).id
+        except ContentType.DoesNotExist:
+            return Response({"message": "model 이름이 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            like = Like.objects.get(
+                object_id=object_id,
+                user=user,
+                content_type=content_type
+            )
+            like.delete()
+        except Like.DoesNotExist:
+            return Response({"message": "해당 좋아요가 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "like를 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)

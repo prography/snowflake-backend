@@ -1,14 +1,14 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import generics, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from likes.models import Like
-from products.serializers.condom import CondomListSerializer, CondomTopNSerailzier, CondomDetailSerializer
+from products.models import Condom, Product, WelcomeCard
+from products.serializers.condom import CondomDetailSerializer, CondomListSerializer, CondomTopNSerailzier
 from products.serializers.welcome_card import ProductWelcomeCardSerializer
-from products.models import WelcomeCard, Condom, Product
 
 
 class WelcomeCardListReadView(generics.ListAPIView):
@@ -75,6 +75,8 @@ class CondomListView(generics.ListAPIView):
             queryset = queryset.order_by("-score")
         else:
             if order in ["num_of_reviews", "avg_oily", "avg_thickness", "avg_durability", "num_of_views", 'num_of_likes']:
+                if order == 'num_of_likes':
+                    order = 'likes_count'
                 queryset = queryset.order_by(f'-{order}')
             else:
                 raise NotFound()
@@ -110,6 +112,6 @@ class NumOfLikesUpdateView(APIView):
         for product in Product.objects.all():
             content_type = ContentType.objects.get(model='review')
             num_of_likes = Like.objects.filter(content_type=content_type.id, object_id=product.id).count()
-            product.num_of_likes = num_of_likes
+            product.likes_count = num_of_likes
             product.save()
         return Response({"message": "Complete"}, status=status.HTTP_200_OK)

@@ -20,7 +20,7 @@ condom_fields = [
     "thickness",
     "durability",
     "content",
-    "num_of_likes",
+    "likes_count",
 ]
 
 
