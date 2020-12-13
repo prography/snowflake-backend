@@ -80,4 +80,4 @@ class LikeView(APIView):
         except Like.DoesNotExist:
             return Response({"message": "해당 좋아요가 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "like를 삭제하였습니다."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
