@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
-from rest_framework import permissions, status, viewsets
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -14,7 +16,13 @@ from snowflake.exception import MissingProductIdException
 from snowflake.permission import AnonCreateAndUpdateOwnerOnly
 
 
-class ReviewCondomViewSet(viewsets.ModelViewSet):
+class ReviewViewset(viewsets.ModelViewSet):
+    """
+    제품의 리뷰
+
+    여러 제품의 리뷰
+    """
+
     permission_classes = [AnonCreateAndUpdateOwnerOnly]
 
     def get_serializer_class(self):
@@ -38,34 +46,29 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         self._check_parameter_validation()
 
         _valid_param = {
-            'filter': self.request.query_params.get("filter", None),
+            'gender': self.request.query_params.get("gender", None),
+            'partner': self.request.query_params.get("partner", None),
             'order': self.request.query_params.get("order", None)
         }
 
-        if _valid_param['filter'] is not None:
-            queryset = self._queryset_filter(queryset, _valid_param['filter'])
-        if _valid_param['order'] is not None:
-            queryset = self._queryset_order(queryset, _valid_param['order'])
-
+        queryset = self._queryset_filter(queryset, _valid_param)
         return queryset
 
     def _check_parameter_validation(self):
-        if not self._is_valid_filter_param():
+        if self._is_valid_filter_param() is False or self._is_valid_order_param() is False:
             raise ValidationError('Invalid partner parameter value')
-        if not self._is_valid_order_param():
-            raise ValidationError('Invalid order parameter value')
-
 
     def _is_valid_filter_param(self):
-        _valid_partner_param = ["gender_MAN", "gender_WOMAN", 'partner_MAN', 'partner_WOMAN']
-        filter = self.request.query_params.get("filter", None)
+        _valid_partner_param = ["MAN", "WOMAN"]
+        gender = self.request.query_params.get("gender")
+        partner = self.request.query_params.get("partner")
 
-        if filter is None or filter in _valid_partner_param:
+        if (gender is None or gender in _valid_partner_param) and (partner is None or partner in _valid_partner_param):
             return True
         return False
 
     def _is_valid_order_param(self):
-        _valid_order_param = ['num_of_likes', 'total', '-total']
+        _valid_order_param = ['likes_count', "-likes_count", 'total', '-total']
         order = self.request.query_params.get("order", None)
 
         if order is None or order in _valid_order_param:
@@ -73,24 +76,29 @@ class ReviewCondomViewSet(viewsets.ModelViewSet):
         return False
 
     def _queryset_filter(self, queryset, _valid_param):
-        _db_filed_name_per_target_filter = {
-            'gender_MAN': ('gender', 'MAN'),
-            'gender_WOMAN': ('gender', 'WOMAN'),
-            'partner_MAN': ('partner_gender', 'MAN'),
-            'partner_WOMAN': ('partner_gender', 'WOMAN')
-        }
-
-        key = _db_filed_name_per_target_filter[_valid_param][0]
-        value = _db_filed_name_per_target_filter[_valid_param][1]
-
-        if key == 'gender':
-            queryset = queryset.filter(gender=value)
-        elif key == 'partner':
-            queryset = queryset.filter(partner_gender=value)
+        if _valid_param.get('gender') is not None:
+            queryset = queryset.filter(gender=_valid_param.get('gender'))
+        if _valid_param.get('partner') is not None:
+            queryset = queryset.filter(partner_gender=_valid_param.get('partner'))
+        if _valid_param.get('order') is not None:
+            queryset = queryset.order_by(f'-{_valid_param.get("order")}')
         return queryset
 
-    def _queryset_order(self, queryset, _valid_param):
-        return queryset.order_by(_valid_param)
+    product_type_param = openapi.Parameter(
+        'product_type', openapi.IN_QUERY, description="condom | gel - 제품의 타입", type=openapi.TYPE_STRING)
+    product_param = openapi.Parameter(
+        'product', openapi.IN_QUERY, description="제품의 id", type=openapi.TYPE_INTEGER)
+    order_param = openapi.Parameter(
+        'order', openapi.IN_QUERY, description="likes_count | -likes_count | total | -total", type=openapi.TYPE_STRING)
+    gender_param = openapi.Parameter(
+        'gender', openapi.IN_QUERY, description="MAN | WOMAN", type=openapi.TYPE_STRING)
+    partner_param = openapi.Parameter(
+        'partner', openapi.IN_QUERY, description="MAN | WOMAN", type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[product_type_param, product_param, order_param, gender_param, partner_param])
+    def list(self, request, *args, **kwargs):
+        response = super(ReviewViewset, self).list(self, request, *args, **kwargs)
+        return response
 
 
 class UpdateCondomScore(APIView):
