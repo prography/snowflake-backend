@@ -28,7 +28,7 @@ mysqlclient==1.4.6
 packaging==20.3
 Pillow==7.1.2
 pyasn1==0.4.8
-PyJWT==1.7.1
+PyJWT==2.4.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
 pytz==2019.3
